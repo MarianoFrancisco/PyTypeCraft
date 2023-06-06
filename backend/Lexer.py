@@ -1,13 +1,25 @@
 import ply.lex as lex
 
-keywords={
-    'null' : 'NULL',
-    'number' : 'NUMBER',
-    'boolean':'BOOLEAN',
-    'string':'STRING',
-    'any':'ANY',
+keywords = {
+    'console.log': 'CONSOLE_LOG',
+    'null': 'NULL',
+    'number': 'NUMBER',
+    'boolean': 'BOOLEAN',
+    'string': 'STRING',
+    'any': 'ANY',
+    'interface': 'INTERFACE',
+    'let': 'LET',
+    'function': 'FUNCTION',
+    'if': 'IF',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'for': 'FOR',
+    'of': 'OF',
+    'break': 'BREAK',
+    'continue': 'CONTINUE',
+    'return': 'RETURN',
 }
-symbols=(
+symbols = (
     'MULT',
     'PLUS',
     'DIV',
