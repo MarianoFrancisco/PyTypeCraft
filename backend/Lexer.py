@@ -3,7 +3,8 @@ import ply.lex as lex
 
 # Palabras reservadas
 keywords = {
-    'console.log': 'CONSOLE_LOG',
+    'console': 'CONSOLE',
+    'log': 'LOG',
     'null': 'NULL',
     'number': 'NUMBER',
     'boolean': 'BOOLEAN',
@@ -23,7 +24,7 @@ keywords = {
 }
 
 # Tokens
-symbols = (
+tokens = [
     'MULT',
     'PLUS',
     'DIV',
@@ -56,7 +57,7 @@ symbols = (
     'STR_CONST',
     'BOOL_CONST',
     'ID'
-)
+] + list(keywords.values())
 
 # Patron de tokens
 t_MULT = r'\*'
@@ -64,7 +65,7 @@ t_PLUS = r'\+'
 t_DIV = r'\/'
 t_MINUS = r'\-'
 t_EQ = r'\='
-t_DOEQ = r'\=\=\='
+t_TREQ = r'\=\=\='
 t_DOT = r'\.'
 t_COMMA = r'\,'
 t_SEMI = r'\;'
@@ -106,7 +107,7 @@ def t_NUM_CONST(t):
 
 
 def t_STR_CONST(t):
-    r"""(['"`])(.*?)\1"""
+    r'(\".*?\")|(\'.*?\')|(\`.*?\`)'
     t.value = t.value[1:-1]
     t.value = t.value.replace('\\"', '\"')
     t.value = t.value.replace("\\'", "\'")
@@ -136,7 +137,7 @@ def t_ID(t):
 # COMMENT
 
 
-def t_COMMENT(t):
+def t_comment(t):
     r'\/\/.*(\n)?'
     if ("\n" in t.value):
         t.lexer.lineno += 1
@@ -144,23 +145,40 @@ def t_COMMENT(t):
 # MULTCOMMENT
 
 
-def t_MULTCOMMENT(t):
+def t_multcomment(t):
     r'\/\*(.|\n)*?\*\/'
     t.lexer.lineno += t.value.count('\n')
 
 
 # WHIT_SPACE
-t_WHIT_SPACE = ' \t\f\v'
+t_ignore = " \t\f\v"
 
 # SKIPLINE
 
 
-def t_SKIP_LINE(t):
+def t_skip_line(t):
     r'\n+'
     t.lexer.lineno += t.value.count('\n')
 
 # ERROR
 
 
-def t_ERROR(t):
+def t_error(t):
     t.lexer.skip(1)
+
+
+""" # Crear instancia del lexer
+lexer = lex.lex(reflags=re.IGNORECASE)
+
+# Ingresar la cadena de texto para analizar
+texto = "console.log('3')"
+
+# Configurar la entrada del lexer
+lexer.input(texto)
+
+# Iterar sobre los tokens generados
+while True:
+    token = lexer.token()
+    if not token:
+        break
+    print(token) """
