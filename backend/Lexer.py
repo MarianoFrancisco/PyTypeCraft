@@ -1,6 +1,8 @@
 import re
 import ply.lex as lex
 
+errors = []
+
 # Palabras reservadas
 keywords = {
     'console': 'CONSOLE',
@@ -166,6 +168,7 @@ def t_skip_line(t):
 def t_error(t):
     t.lexer.skip(1)
 
+lexer = lex.lex(reflags=re.IGNORECASE)
 
 """ # Crear instancia del lexer
 lexer = lex.lex(reflags=re.IGNORECASE)
