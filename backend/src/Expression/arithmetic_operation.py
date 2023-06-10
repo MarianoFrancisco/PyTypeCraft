@@ -10,15 +10,15 @@ class Aritmetica(Abstract):
         super().__init__(line, column)
 
     def interpret(self, tree, table):
-        izq = self.l_op.interpret(tree, table)
+        left = self.l_op.interpret(tree, table)
         l_type = self.l_op.getTipo()
-        der = self.r_op.interpret(tree, table)
+        right = self.r_op.interpret(tree, table)
         r_type = self.r_op.getTipo()
         if self.op == '+':
             if l_type == 'number' and r_type == 'number':
-                return izq + der
+                return left + right
             elif l_type == 'string' and r_type == 'string':
-                return izq + der
+                return left + right
             elif l_type == 'string' and r_type == 'number':
                 return 'Error: No se puede sumar un string con un number'
             elif l_type == 'number' and r_type == 'string':
@@ -26,10 +26,10 @@ class Aritmetica(Abstract):
             else:
                 return 'Error: Tipo de dato invalido en suma'
         elif self.op == '-':
-            return izq - der
+            return left - right
         elif self.op == '*':
-            return izq * der
+            return left * right
         elif self.op == '/':
-            if der == 0:
+            if right == 0:
                 return 'Error: Division entre 0'
-            return izq / der
+            return left / right
