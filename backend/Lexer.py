@@ -23,6 +23,8 @@ keywords = {
     'break': 'BREAK',
     'continue': 'CONTINUE',
     'return': 'RETURN',
+    'true': 'TRUE',
+    'false': 'FALSE'
 }
 
 # Tokens
@@ -57,7 +59,6 @@ tokens = [
     'RBRACKET',
     'NUM_CONST',
     'STR_CONST',
-    'BOOL_CONST',
     'ID'
 ] + list(keywords.values())
 
@@ -117,17 +118,6 @@ def t_STR_CONST(t):
     t.value = t.value.replace('\\t', '\t')
     t.value = t.value.replace('\\n', '\n')
     return t
-# BOOLEAN
-
-
-def t_BOOL_CONST(t):
-    r'(true)|(false)'
-    if ("true" in t.value):
-        t.value = True
-    else:
-        t.value = False
-    return t
-
 
 # ID
 
