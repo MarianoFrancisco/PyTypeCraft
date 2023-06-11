@@ -1,39 +1,39 @@
 from ..Symbol_Table.exception import CompilerException
 
 
-class TablaSimbolos:
+class SymbolTable:
 
-    def __init__(self, anterior=None):
-        self.tabla = {}  # Al inicio la tabla esta vacia
-        self.anterior = anterior  # Apuntador al entorno anterior
+    def __init__(self, prevScope=None):
+        self.table = {}  # Al inicio la table esta vacia
+        self.prevScope = prevScope  # Apuntador al entorno prevScope
 
-    def getTablaG(self):
-        return self.tabla
+    def getGlobalTable(self):
+        return self.table
 
-    def setTabla(self, simbolo):
+    def setTable(self, simbolo):
         # Aqui va la verificacion de que no se declare una variable dos veces
-        self.tabla[simbolo.getID()] = simbolo
+        self.table[simbolo.getID()] = simbolo
 
-    def setTablaFuncion(self, simbolo):
-        self.tabla[simbolo.getID()] = simbolo
+    def setTableFuncion(self, simbolo):
+        self.table[simbolo.getID()] = simbolo
 
-    def getTabla(self, ide):  # Aqui manejamos los entornos :3
-        tablaActual = self
-        while tablaActual != None:
-            if ide in tablaActual.tabla:
-                return tablaActual.tabla[ide]
+    def getTable(self, ide):  # Aqui manejamos los entornos :3
+        tableActual = self
+        while tableActual != None:
+            if ide in tableActual.table:
+                return tableActual.table[ide]
             else:
-                tablaActual = tablaActual.anterior
+                tableActual = tableActual.prevScope
         return None
 
-    def updateTabla(self, simbolo):
-        tablaActual = self
-        while tablaActual != None:
-            if simbolo.getID() in tablaActual.tabla:
-                tablaActual.tabla[simbolo.getID()].setValor(simbolo.getValor())
+    def updateTable(self, simbolo):
+        tableActual = self
+        while tableActual != None:
+            if simbolo.getID() in tableActual.table:
+                tableActual.table[simbolo.getID()].setValor(simbolo.getValue())
                 return None
                 # Si necesitan cambiar el tipo de dato
-                # tablaActual.tabla[simbolo.getID()].setTipo(simbolo.getTipo())
+                # tableActual.table[simbolo.getID()].setTipo(simbolo.getTipo())
             else:
-                tablaActual = tablaActual.anterior
-        return CompilerException("Semantico", "Variable no encontrada.", simbolo.getFila(), simbolo.getColumna())
+                tableActual = tableActual.prevScope
+        return CompilerException("Semantico", "Variable no encontrada.", simbolo.getLine(), simbolo.getColumn())
