@@ -1,6 +1,7 @@
 import ply.yacc as yacc
-from Lexer import tokens, lexer, errors
+from Lexer import tokens, lexer, errors, find_column
 
+from src.Expression.arithmetic_operation import ArithmeticOperation
 precedence = (
     ('left', 'OR'),
     ('left', 'AND'),
@@ -293,7 +294,7 @@ def p_expression_operation(p):
                     | expression POW expression
                     '''
     if (p[2]=='*'):
-        p[0]
+        p[0] = ArithmeticOperation(p[1], p[3], '*', p.lineno(2), find_column(input, p.slice[2]))
     elif (p[2]=='+'):
         p[0]
     elif (p[2]=='/'):

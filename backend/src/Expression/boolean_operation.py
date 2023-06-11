@@ -1,4 +1,4 @@
-from ..Tabla_Simbolos.excepcion import Excepcion
+from ..Symbol_Table.exception import CompilerException
 from ..Abstract.abstract import Abstract
 
 
@@ -11,13 +11,13 @@ class Relacional_Logica(Abstract):
         self.type = 'boolean'
         super().__init__(line, column)
 
-    def interpretar(self, tree, table):
-        left = self.l_op.interpretar(tree, table)
-        if isinstance(left, Excepcion):
+    def interpret(self, tree, table):
+        left = self.l_op.interpret(tree, table)
+        if isinstance(left, CompilerException):
             return left
         if self.op != '!':
-            right = self.r_op.interpretar(tree, table)
-            if isinstance(right, Excepcion):
+            right = self.r_op.interpret(tree, table)
+            if isinstance(right, CompilerException):
                 return right
         if self.op == '<':
             return left < right
@@ -38,7 +38,7 @@ class Relacional_Logica(Abstract):
         elif self.op == '!':
             return not left
         else:
-            return Excepcion("Semantico", "Operacion no valida.", self.line, self.column)
+            return CompilerException("Semantico", "Operacion no valida.", self.line, self.column)
 
     def getType(self):
         return self.type

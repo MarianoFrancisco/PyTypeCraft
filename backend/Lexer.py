@@ -158,6 +158,10 @@ def t_skip_line(t):
 def t_error(t):
     t.lexer.skip(1)
 
+def find_column(inp, tk):
+    line_start = inp.rfind('\n', 0, tk.lexpos) + 1
+    return (tk.lexpos - line_start) + 1
+
 lexer = lex.lex(reflags=re.IGNORECASE)
 
 """ # Crear instancia del lexer

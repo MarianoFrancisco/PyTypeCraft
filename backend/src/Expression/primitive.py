@@ -10,6 +10,3 @@ class Primitive(Abstract):
 
     def interpret(self, tree, table):
         return self.value
-
-    def getType(self):
-        return self.type
