@@ -315,14 +315,15 @@ def parse(inp):
 
 
 entrada = '''
-function fibonacci(n: number) {
-    if (n <= 1) {
-        return n;
-    } else {
-        return fibonacci(n - 1) + fibonacci(n-2);
-    }
-}
-console.log(fibonacci(10));
+let val1:number = 1;
+let val2:number = 10;
+let val3:number = 2021.2020;
+
+console.log("Probando declaracion de variables \n");
+
+console.log("---------------------------------");
+// COMENTARIO DE UNA LINEA
+
 
 '''
 

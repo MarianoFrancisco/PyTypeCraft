@@ -130,7 +130,7 @@ def t_ID(t):
 
 
 def t_comment(t):
-    r'\/\/.*(\n)?'
+    r'\/\/.*(\\n)?'
     if ("\n" in t.value):
         t.lexer.lineno += 1
 
