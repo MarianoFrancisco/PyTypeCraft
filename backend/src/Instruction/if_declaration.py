@@ -1,6 +1,7 @@
 from ..Semantic.exception import CompilerException
 from ..Semantic.symbol_table import SymbolTable
 from ..Abstract.abstract import Abstract
+from ..Instruction.reserved_return import ReservedReturn
 
 class IfSentence(Abstract):
 
@@ -22,11 +23,14 @@ class IfSentence(Abstract):
                 result = instruccion.execute(tree, scope) 
                 if isinstance(result, CompilerException) :
                     tree.setExceptions(result)
+                if isinstance(result, ReservedReturn): return result
         elif self.elseBlock != None:
             scope = SymbolTable(table)
             for instruccion in self.elseBlock:
                 result = instruccion.execute(tree, scope) 
                 if isinstance(result, CompilerException) :
                     tree.setExceptions(result)
+                if isinstance(result, ReservedReturn): return result
         elif self.elseIfBlock != None:
             result = self.elseIfBlock.execute(tree, table)
+            if isinstance(result, ReservedReturn): return result

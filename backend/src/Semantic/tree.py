@@ -28,10 +28,10 @@ class Tree_:
     def setFunctions(self, functions):
         self.functions.append(functions)
 
-    def getFuncion(self, id):
-        for funcion in self.functions:
-            if funcion.id == id:
-                return funcion
+    def getFunction(self, id):
+        for function in self.functions:
+            if function.name == id:
+                return function
         return None
     
     def getExceptions(self):

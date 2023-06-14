@@ -11,3 +11,5 @@ class Primitive(Abstract):
     def execute(self, tree, table):
         return self.value
     
+    def getType(self):
+        return self.type

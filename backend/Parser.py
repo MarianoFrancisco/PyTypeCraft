@@ -4,6 +4,9 @@ from src.Instruction.variable_assignation import VariableAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
+from src.Instruction.call_function import CallFunction
+from src.Instruction.function import Function
+from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
@@ -59,14 +62,20 @@ def p_instruccion(p):
     '''instruction : print SEMI
                     | declaration SEMI
                     | assignment SEMI
-                    | start_if SEMI''' 
+                    | start_if SEMI
+                    | function SEMI
+                    | call_function SEMI
+                    | return SEMI''' 
     p[0] = p[1]
 
 def p_instruccion_1(p):
     '''instruction : print
                     | declaration
                     | assignment
-                    | start_if''' 
+                    | start_if
+                    | function
+                    | call_function
+                    | return''' 
     p[0] = p[1]
 
 ''' Type '''
@@ -123,6 +132,69 @@ def p_declaration_type(p):
 def p_declaration_notype(p):
     'declaration : LET ID'
     p[0] = VariableDeclaration(p[2], 'any', None, p.lineno(1), find_column(input, p.slice[1]))
+
+''' Function'''
+#function a(){instructions}
+def p_function(p):
+    'function : FUNCTION ID LPAREN RPAREN LBRACE instructions RBRACE'
+    p[0]= Function(p[2],[],p[6], p.lineno(1), find_column(input, p.slice[1]))
+#function a(x){instructions}
+def p_function_parameter(p):
+    'function : FUNCTION ID LPAREN parameters RPAREN LBRACE instructions RBRACE'
+    p[0]=Function(p[2], p[4], p[7], p.lineno(1), find_column(input, p.slice[1]))
+
+''' Call function '''
+
+# a(x)
+def p_call_function_parameters(p):
+    'call_function : ID LPAREN parameters_call RPAREN'
+    p[0]= CallFunction(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
+
+# a()
+def p_call_function(p):
+    'call_function : ID LPAREN RPAREN'
+    p[0]= CallFunction(p[1],[],p.lineno(1), find_column(input, p.slice[1]))
+
+''' Parameters Function'''
+
+# Many parameters id,id
+
+def p_parameters_list(p):
+    'parameters : parameters COMMA parameter'
+    p[1].append(p[3])
+    p[0]=p[1]
+
+# One parameter id
+
+def p_parameter_one(p):
+    'parameters : parameter'
+    p[0]=[p[1]]
+# function name(id) 
+
+# function name(id,id,id){} -x,x,x
+def p_parameter_id(p):
+    'parameter : ID'
+    p[0] = {'type': 'any', 'id': p[1]}
+
+# function name(id:String) - x: number[] 
+def p_parameter_type(p):
+    'parameter : ID COLON type'
+    p[0] = {'type': p[3], 'id': p[1]}
+
+''' Parameteres call function'''
+
+def p_parameters_call_list(p):
+    'parameters_call : parameters_call COMMA parameter_call'
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_parameters_call_one(p):
+    'parameters_call : parameter_call'
+    p[0] = [p[1]]
+
+def p_parameter_call_data(p):
+    'parameter_call : expression'
+    p[0] = p[1]
 
 
 ''' Conditional if'''
@@ -217,6 +289,17 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+'''Call function with other function'''
+
+def p_expresion_call_function(p):
+    'expression : call_function'
+    p[0] = p[1]
+
+''' Return '''
+def p_return(p):
+    'return : RETURN expression'
+    p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
+
 def p_error(t):
     print(" Error sintáctico en '%s'" % t.value)
 
@@ -242,6 +325,8 @@ if (a < 3){
 }else{
     console.log(a);
 }
+console.log(fibonacci(10));
+
 '''
 
 def test_lexer(lexer):
@@ -260,12 +345,16 @@ ast = Tree_(instrucciones)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 
-# for instruccion in ast.getInstr():
-#     if isinstance(instruccion, Funcion):
-#         ast.setFunciones(instruccion)
+for instruccion in ast.getInstr():     
+    if isinstance(instruccion, Function):
+        ast.setFunctions(instruccion)
 
 for instruccion in ast.getInstr():
-    value = instruccion.execute(ast,globalScope)
+    if not(isinstance(instruccion, Function)):
+        value = instruccion.execute(ast,globalScope)
+        if isinstance(value, CompilerException):
+            ast.setExceptions(value)
+    """ value = instruccion.execute(ast,globalScope)
     if isinstance(value, CompilerException):
-        ast.setExceptions(value)
+        ast.setExceptions(value) """
 print(ast.getConsole())
