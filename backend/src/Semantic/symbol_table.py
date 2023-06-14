@@ -1,7 +1,7 @@
 from ..Semantic.exception import CompilerException
 
 
-class SymbolTable_:
+class Symbol_Table:
 
     def __init__(self, prevScope=None):
         self.table = {}  # Al inicio la table esta vacia

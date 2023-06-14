@@ -4,7 +4,7 @@ from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import If_sentence
 from src.Instruction.console_log import ConsoleLog
-from src.Semantic.symbol_table import SymbolTable_
+from src.Semantic.symbol_table import Symbol_Table
 from src.Semantic.exception import CompilerException
 from src.Expression.identifier import Identifier
 from src.Semantic.tree import Tree_
@@ -233,6 +233,9 @@ def parse(inp):
 
 entrada = '''
 console.log(-1+5)
+if (true) {
+    console.log('hola')
+}
 '''
 
 def test_lexer(lexer):
@@ -248,7 +251,7 @@ lexer.input(entrada)
 
 instrucciones = parse(entrada)
 ast = Tree_(instrucciones)
-globalScope = SymbolTable_()
+globalScope = Symbol_Table()
 ast.setGlobalScope(globalScope)
 
 # for instruccion in ast.getInstr():
