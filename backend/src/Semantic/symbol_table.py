@@ -26,11 +26,11 @@ class SymbolTable:
                 currentScope = currentScope.prevScope
         return None
 
-    def updateSymbol(self, symbol):
+    def updateSymbol(self, id, value):
         currentScope = self
         while currentScope != None:
-            if symbol.id in currentScope.table:
-                currentScope.table[symbol.id].value = symbol.value
+            if id in currentScope.table:
+                currentScope.table[id].value = value
                 return None
                 # Si necesitan cambiar el tipo de dato
                 # currentScope.table[symbol.id].setTipo(symbol.getTipo())
