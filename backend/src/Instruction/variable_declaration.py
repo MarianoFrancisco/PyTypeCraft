@@ -1,3 +1,4 @@
+from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
 from ..Semantic.symbol import Symbol
@@ -9,6 +10,16 @@ class VariableDeclaration(Abstract):
         self.type = type # Number, String, Boolean
         self.value = value # 4, 'hola', true
         super().__init__(line, column)
+        # ASIGNANDO VALORES POR DEFECTO
+        if value == None:
+            if type == 'number':
+                self.value = Primitive(0, 'number', self.line, self.column)
+            elif type == 'boolean':
+                self.value = Primitive(False, 'boolean', self.line, self.column)
+            elif type == 'string':
+                self.value = Primitive('', 'string', self.line, self.column)
+            else:
+                self.value = Primitive('', 'any', self.line, self.column)
     
     def execute(self, tree, table):
         value = self.value.execute(tree, table)
@@ -16,7 +27,7 @@ class VariableDeclaration(Abstract):
         # Verificacion de types
         if str(self.type) == str(self.value.type):
             symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
-            result = table.setTable(symbol)
+            result = table.addSymbol(symbol)
             if isinstance(result, CompilerException): return result
             return None
         else:

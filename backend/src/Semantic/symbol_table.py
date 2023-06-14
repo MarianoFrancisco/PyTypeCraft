@@ -1,7 +1,7 @@
 from ..Semantic.exception import CompilerException
 
 
-class SymbolTable_:
+class SymbolTable:
 
     def __init__(self, prevScope=None):
         self.table = {}  # Al inicio la table esta vacia
@@ -10,7 +10,7 @@ class SymbolTable_:
     def getGlobalScope(self):
         return self.table
 
-    def setTable(self, symbol):
+    def addSymbol(self, symbol):
         # Aqui va la verificacion de que no se declare una variable dos veces
         self.table[symbol.id] = symbol
 

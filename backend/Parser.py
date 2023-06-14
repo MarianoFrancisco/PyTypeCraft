@@ -2,12 +2,12 @@ import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
-from src.Instruction.if_declaration import If_sentence
+from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
 from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
-from src.Semantic.symbol_table import SymbolTable_
+from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
 from src.Expression.identifier import Identifier
 from src.Semantic.tree import Tree_
@@ -114,7 +114,7 @@ def p_assignment_type(p):
 
 def p_assignment_notype(p):
     'assignment : LET ID EQ expression'
-    p[0]
+    p[0] = VariableDeclaration(p[2], 'any', p[6], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Declaration'''
 
@@ -122,13 +122,13 @@ def p_assignment_notype(p):
 
 def p_declaration_type(p):
     'declaration : LET ID COLON type'
-    p[0]
+    p[0] = VariableDeclaration(p[2], p[4], None, p.lineno(1), find_column(input, p.slice[1]))
 
 # let a
 
 def p_declaration_notype(p):
     'declaration : LET ID'
-    p[0]
+    p[0] = VariableDeclaration(p[2], 'any', None, p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Function'''
 #function a(){instructions}
@@ -204,15 +204,15 @@ def p_start_if(p):
 # if (true){instructions}
 def p_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE'
-    p[0] = If_sentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
 # if (true){instructions} else{instructions}
 def p_if_else(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE LBRACE instructions RBRACE'
-    p[0] = If_sentence(p[2], p[5], p[9], None, p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], p[9], None, p.lineno(1), find_column(input, p.slice[1]))
 # if (true){instructions} else if (x){instructions}else if(x){instructions}
 def p_if_else_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE IF if'
-    p[0] = If_sentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
 
 '''Increment and decrement'''
 # i++, i--
@@ -315,7 +315,6 @@ def parse(inp):
 
 
 entrada = '''
-
 function fibonacci(n: number) {
     if (n <= 1) {
         return n;
@@ -323,7 +322,6 @@ function fibonacci(n: number) {
         return fibonacci(n - 1) + fibonacci(n-2);
     }
 }
-
 console.log(fibonacci(10));
 
 '''
@@ -341,7 +339,7 @@ lexer.input(entrada)
 
 instrucciones = parse(entrada)
 ast = Tree_(instrucciones)
-globalScope = SymbolTable_()
+globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 
 for instruccion in ast.getInstr():     

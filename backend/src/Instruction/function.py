@@ -1,7 +1,7 @@
 from ..Instruction.reserved_return import ReservedReturn
 from ..Abstract.abstract import Abstract
 from ..Semantic.exception import CompilerException
-from ..Semantic.symbol_table import SymbolTable_
+from ..Semantic.symbol_table import SymbolTable
 
 class Function(Abstract):
 
@@ -14,7 +14,7 @@ class Function(Abstract):
     
 
     def execute(self, tree,table):
-        entorn = SymbolTable_(table)
+        entorn = SymbolTable(table)
         for instruction in self.instructions:
             function = instruction.execute(tree, entorn)
             if isinstance(function, CompilerException): return function

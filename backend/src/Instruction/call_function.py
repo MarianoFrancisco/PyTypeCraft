@@ -1,7 +1,7 @@
 from ..Abstract.abstract import Abstract
 from ..Semantic.exception import CompilerException
 from ..Semantic.symbol import Symbol
-from ..Semantic.symbol_table import SymbolTable_
+from ..Semantic.symbol_table import SymbolTable
 
 class CallFunction(Abstract):
 
@@ -14,8 +14,7 @@ class CallFunction(Abstract):
         function = tree.getFunction(self.name)
         if function == None:
             return CompilerException("Semantico", "No se encontro la funcion: " + str(self.name), str(self.line), str(self.column))
-        entorn = SymbolTable_(tree.getGlobalScope())
-        #print(str(self.parameters))
+        entorn = SymbolTable(tree.getGlobalScope())
         if len(self.parameters) == len(function.parameters):
             count = 0
             for expression in self.parameters:

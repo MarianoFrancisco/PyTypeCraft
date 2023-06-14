@@ -1,9 +1,9 @@
 from ..Semantic.exception import CompilerException
-from ..Semantic.symbol_table import SymbolTable_
+from ..Semantic.symbol_table import SymbolTable
 from ..Abstract.abstract import Abstract
 from ..Instruction.reserved_return import ReservedReturn
 
-class If_sentence(Abstract):
+class IfSentence(Abstract):
 
     def __init__(self, condition, ifBlock, elseBlock, elseIfBlock, line, column):
         super().__init__(line, column)
@@ -18,14 +18,14 @@ class If_sentence(Abstract):
         if isinstance(conditionEvaluated, CompilerException): return conditionEvaluated
         # Validar que el tipo sea booleano
         if bool(conditionEvaluated) == True:
-            scope = SymbolTable_(table)  #NUEVO ENTORNO - HIJO - Vacio
+            scope = SymbolTable(table)  #NUEVO ENTORNO - HIJO - Vacio
             for instruccion in self.ifBlock:
                 result = instruccion.execute(tree, scope) 
                 if isinstance(result, CompilerException) :
                     tree.setExceptions(result)
                 if isinstance(result, ReservedReturn): return result
         elif self.elseBlock != None:
-            scope = SymbolTable_(table)
+            scope = SymbolTable(table)
             for instruccion in self.elseBlock:
                 result = instruccion.execute(tree, scope) 
                 if isinstance(result, CompilerException) :
