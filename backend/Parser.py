@@ -96,7 +96,7 @@ def p_type(p):
 ''' Print'''
 
 def p_print(p):
-    'print : CONSOLE DOT LOG LPAREN expression RPAREN'
+    'print : CONSOLE DOT LOG LPAREN parameters_call RPAREN'
     p[0] = ConsoleLog(p[5],p.lineno(1), find_column(input, p.slice[1]))
 
 
@@ -324,6 +324,7 @@ let val3:number = 2021.2020;
 
 console.log("Probando declaracion de variables \n");
 console.log(val1);
+console.log(val1, val2);
 console.log("---------------------------------");
 // COMENTARIO DE UNA LINEA
 '''
