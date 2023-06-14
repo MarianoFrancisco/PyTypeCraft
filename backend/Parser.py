@@ -105,7 +105,7 @@ def p_assignment_type(p):
 
 def p_assignment_notype(p):
     'assignment : LET ID EQ expression'
-    p[0]
+    p[0] = VariableDeclaration(p[2], 'any', p[6], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Declaration'''
 
@@ -113,13 +113,13 @@ def p_assignment_notype(p):
 
 def p_declaration_type(p):
     'declaration : LET ID COLON type'
-    p[0]
+    p[0] = VariableDeclaration(p[2], p[4], None, p.lineno(1), find_column(input, p.slice[1]))
 
 # let a
 
 def p_declaration_notype(p):
     'declaration : LET ID'
-    p[0]
+    p[0] = VariableDeclaration(p[2], 'any', None, p.lineno(1), find_column(input, p.slice[1]))
 
 
 ''' Conditional if'''
@@ -233,8 +233,10 @@ def parse(inp):
 
 entrada = '''
 console.log(-1+5)
+let b:number
 if (true) {
     console.log('hola')
+    console.log(b+1)
 }
 '''
 

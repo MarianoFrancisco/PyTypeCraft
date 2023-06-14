@@ -10,7 +10,7 @@ class SymbolTable:
     def getGlobalScope(self):
         return self.table
 
-    def setTable(self, symbol):
+    def addSymbol(self, symbol):
         # Aqui va la verificacion de que no se declare una variable dos veces
         self.table[symbol.id] = symbol
 
