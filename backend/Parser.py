@@ -1,12 +1,14 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
+from src.Instruction.if_declaration import If_sentence
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable_
 from src.Semantic.exception import CompilerException
 from src.Expression.identifier import Identifier
 from src.Semantic.tree import Tree_
 from src.Expression.primitive import Primitive
-from src.Expression.binary_operation import ArithmeticOperation
+from src.Expression.binary_operation import ArithmeticOperation, BooleanOperation
 
 precedence = (
     ('left', 'OR'),
@@ -109,6 +111,7 @@ def p_declaration_notype(p):
 def p_print(p):
     'print : CONSOLE DOT LOG LPAREN expression RPAREN'
     p[0] = ConsoleLog(p[5],p.lineno(1), find_column(input, p.slice[1]))
+    print('creando print')
 
 ''' Conditional if'''
 # start if
@@ -120,24 +123,16 @@ def p_start_if(p):
 # if (true){instructions}
 def p_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE'
-    p[0]
+    p[0] = If_sentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
+    print('creando if')
 # if (true){instructions} else{instructions}
 def p_if_else(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE LBRACE instructions RBRACE'
-    p[0]
+    p[0] = If_sentence(p[2], p[5], p[9], None, p.lineno(1), find_column(input, p.slice[1]))
 # if (true){instructions} else if (x){instructions}else if(x){instructions}
 def p_if_else_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE IF if'
-    p[0]
-
-''' unary --3=-(-3)'''
-def p_expresion_unaria(t):
-    '''expresion : MINUS expression %prec UMINUS
-                | NOT expression %prec UNOT'''
-    if t[1] == '-':
-        t[0] 
-    elif t[1] == '!':
-        t[0]
+    p[0] = If_sentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
 
 '''Increment and decrement'''
 # i++, i--
@@ -171,7 +166,20 @@ def p_expression_operation(p):
                     | expression MOD expression
                     | expression POW expression
                     '''
-    p[0] = ArithmeticOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
+    if p[2] in ['+', '-', '*', '/', '%', '^']:
+        p[0] = ArithmeticOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
+    else:
+        p[0] = BooleanOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
+
+''' unary --3=-(-3)'''
+def p_expresion_unaria(p):
+    '''expresion : MINUS expression %prec UMINUS
+                | NOT expression %prec UNOT'''
+    if p[1] == '-':
+        p[0] = ArithmeticUnaryOperation(p[2], p[1], p.lineno(1), find_column(input, p.slice[1]))
+    elif p[1] == '!':
+        p[0] = BooleanUnaryOperation(p[2], p[1], p.lineno(1), find_column(input, p.slice[1]))
+
 
 ''' Primivite '''
 # 1234
@@ -183,6 +191,7 @@ def p_expression_number(p):
 def p_expression_string(p):
     'expression : STR_CONST'
     p[0] = Primitive(p[1], 'string', p.lineno(1), find_column(input, p.slice[1]))
+    print('creando string primitive')
 # true
 def p_expression_boolean_true(p):
     'expression : TRUE'
@@ -199,7 +208,8 @@ def p_expression_id(p):
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
 def p_error(t):
-    print(" Error sintáctico en '%s'" % t.value)
+    # print(" Error sintáctico en '%s'" % t.value)
+    print("error sintactico")
 
 
 input = ''
@@ -216,10 +226,11 @@ def parse(inp):
 
 
 entrada = '''
-
-console.log(5*4+2/5);
-console.log(5*4);
-console.log(5*4);
+if (false) {
+    console.log('hola');
+}else{
+    console.log('adios');
+}
 '''
 
 instrucciones = parse(entrada)
@@ -232,7 +243,6 @@ ast.setGlobalScope(globalScope)
 #         ast.setFunciones(instruccion)
 
 for instruccion in ast.getInstr():
-    print('hola')
     value = instruccion.execute(ast,globalScope)
     if isinstance(value, CompilerException):
         ast.setExceptions(value)

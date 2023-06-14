@@ -10,7 +10,7 @@ class Identifier(Abstract):
         self.type = type
 
     def execute(self, tree, table):
-        symbol = table.getTable(self.id)
+        symbol = table.getSymbolById(self.id)
         if symbol == None:
             return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
         self.type = symbol.type

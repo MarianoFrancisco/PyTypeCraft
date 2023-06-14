@@ -10,15 +10,15 @@ class VariableDeclaration(Abstract):
         self.value = value # 4, 'hola', true
         super().__init__(line, column)
     
-    def interpretar(self, arbol, tabla):
-        value = self.value.interpretar(arbol, tabla)
+    def execute(self, tree, table):
+        value = self.value.execute(tree, table)
         if isinstance(value, CompilerException): return value # Analisis Semantico -> Error
         # Verificacion de types
         if str(self.type) == str(self.value.type):
-            simbolo = Symbol(str(self.id), self.value.type, value, self.line, self.column)
-            result = tabla.setTabla(simbolo)
+            symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
+            result = table.setTable(symbol)
             if isinstance(result, CompilerException): return result
             return None
         else:
-            result = CompilerException("Semantico", "type de dato diferente declarado.", self.line, self.column)
+            result = CompilerException("Semantico", "Tipo de dato diferente declarado.", self.line, self.column)
             return result

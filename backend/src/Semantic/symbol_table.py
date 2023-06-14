@@ -17,7 +17,7 @@ class SymbolTable_:
     def setTableFunction(self, symbol):
         self.table[symbol.id] = symbol
 
-    def getScopeById(self, id):  # Se obtiene el entorno
+    def getSymbolById(self, id):  # Se obtiene el entorno
         currentScope = self
         while currentScope != None:
             if id in currentScope.table:

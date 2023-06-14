@@ -3,3 +3,7 @@
 ./backend/ply/__pycache__/
 
 __pycache__
+
+parser.out
+backend/parser.out
+parsetab.py

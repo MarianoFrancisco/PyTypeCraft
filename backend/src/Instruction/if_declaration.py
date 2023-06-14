@@ -1,8 +1,7 @@
+from ..Semantic.symbol_table import SymbolTable_
 from ..Abstract.abstract import Abstract
-from ..Tabla_Simbolos.excepcion import Excepcion
-from ..Tabla_Simbolos.tabla_simbolos import TablaSimbolos
 
-class If(Abstract):
+class If_sentence(Abstract):
 
     def __init__(self, condition, ifBlock, elseBlock, elseIfBlock, line, column):
         self.condition = condition
@@ -12,21 +11,21 @@ class If(Abstract):
         super().__init__(line, column)
     
 
-    def interpretar(self, arbol, tabla):
-        condition = self.condition.interpretar(arbol, tabla)
-        if isinstance(condition, Excepcion): return condition
+    def execute(self, tree, table):
+        condition = self.condition.execute(tree, table)
+        if isinstance(condition, Exception): return condition
         # Validar que el tipo sea booleano
         if bool(condition) == True:
-            entorno = TablaSimbolos(tabla)  #NUEVO ENTORNO - HIJO - Vacio
+            scope = SymbolTable_(table)  #NUEVO ENTORNO - HIJO - Vacio
             for instruccion in self.ifBlock:
-                result = instruccion.interpretar(arbol, entorno) 
-                if isinstance(result, Excepcion) :
-                    arbol.setExcepciones(result)
+                result = instruccion.execute(tree, scope) 
+                if isinstance(result, Exception) :
+                    tree.setExceptiones(result)
         elif self.elseBlock != None:
-            entorno = TablaSimbolos(tabla)
+            scope = SymbolTable_(table)
             for instruccion in self.elseBlock:
-                result = instruccion.interpretar(arbol, entorno) 
-                if isinstance(result, Excepcion) :
-                    arbol.setExcepcion(result)
+                result = instruccion.execute(tree, scope) 
+                if isinstance(result, Exception) :
+                    tree.setException(result)
         elif self.elseIfBlock != None:
-            result = self.elseIfBlock.interpretar(arbol, tabla)
+            result = self.elseIfBlock.execute(tree, table)
