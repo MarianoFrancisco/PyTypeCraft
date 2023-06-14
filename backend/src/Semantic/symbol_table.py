@@ -36,4 +36,4 @@ class SymbolTable:
                 # currentScope.table[symbol.id].setTipo(symbol.getTipo())
             else:
                 currentScope = currentScope.prevScope
-        return CompilerException("Semantico", "Variable no encontrada.", symbol.line, symbol.column)
+        return CompilerException("Semantico", f"Variable {id} no encontrada.", -1, -1)

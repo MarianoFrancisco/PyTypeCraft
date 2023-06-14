@@ -15,6 +15,7 @@ class VariableAssignation(Abstract):
         if isinstance(symbol, CompilerException): return symbol
         if self.value.type != symbol.type:
             return CompilerException('Semantico', f'El valor {valueResult} no coincide con el tipo {symbol.type} de la variable {self.id}')
+        
         result = table.updateSymbol(self.id, valueResult)
         if isinstance(result, CompilerException):
             return result
