@@ -102,7 +102,7 @@ def p_print(p):
 
 #definir local, definir global , funcion, struct, console, while, for
 ''' Assignment '''
-def p_assignment_assignment_type(p):
+def p_assignment(p):
     'assignment : ID EQ expression'
     p[0] = VariableAssignation(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
 # let a:String = "abc" let a:Number = [1,2,3]
@@ -325,7 +325,6 @@ if (a < 3){
 }else{
     console.log(a);
 }
-console.log(fibonacci(10));
 
 '''
 
