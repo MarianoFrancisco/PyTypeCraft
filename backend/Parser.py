@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import If_sentence
 from src.Instruction.console_log import ConsoleLog
@@ -60,6 +61,13 @@ def p_instruccion(p):
                     | start_if SEMI''' 
     p[0] = p[1]
 
+def p_instruccion_1(p):
+    '''instruction : print
+                    | declaration
+                    | assignment
+                    | start_if''' 
+    p[0] = p[1]
+
 ''' Type '''
 
 #Type take value number, boolean, string & any
@@ -75,6 +83,13 @@ def p_type(p):
             '''
     p[0]=p[1]
 
+''' Print'''
+
+def p_print(p):
+    'print : CONSOLE DOT LOG LPAREN expression RPAREN'
+    p[0] = ConsoleLog(p[5],p.lineno(1), find_column(input, p.slice[1]))
+
+
 #definir local, definir global , funcion, struct, console, while, for
 ''' Assignment '''
 ''' With type'''
@@ -82,7 +97,7 @@ def p_type(p):
 
 def p_assignment_type(p):
     'assignment : LET ID COLON type EQ expression'
-    p[0]
+    p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -106,25 +121,18 @@ def p_declaration_notype(p):
     'declaration : LET ID'
     p[0]
 
-''' Print'''
-
-def p_print(p):
-    'print : CONSOLE DOT LOG LPAREN expression RPAREN'
-    p[0] = ConsoleLog(p[5],p.lineno(1), find_column(input, p.slice[1]))
-    print('creando print')
 
 ''' Conditional if'''
 # start if
 
 def p_start_if(p):
     'start_if : IF if'
-    p[0]=[2]
+    p[0]=p[2]
 
 # if (true){instructions}
 def p_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE'
     p[0] = If_sentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
-    print('creando if')
 # if (true){instructions} else{instructions}
 def p_if_else(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE LBRACE instructions RBRACE'
@@ -190,8 +198,7 @@ def p_expression_number(p):
 # "asdf"
 def p_expression_string(p):
     'expression : STR_CONST'
-    p[0] = Primitive(p[1], 'string', p.lineno(1), find_column(input, p.slice[1]))
-    print('creando string primitive')
+    p[0] = Primitive(p[1], 'string', p.lineno(1), find_column(input, p.slice[1]))    
 # true
 def p_expression_boolean_true(p):
     'expression : TRUE'
@@ -208,8 +215,7 @@ def p_expression_id(p):
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
 def p_error(t):
-    # print(" Error sintáctico en '%s'" % t.value)
-    print("error sintactico")
+    print(" Error sintáctico en '%s'" % t.value)
 
 
 input = ''
@@ -226,12 +232,28 @@ def parse(inp):
 
 
 entrada = '''
-if (false) {
-    console.log('hola');
+let a:number = 5;
+let b:number = 3;
+
+if (a === b) {
+    console.log(a);
+}else if (a < b) {
+    console.log('else if');
 }else{
-    console.log('adios');
+    console.log('fin');
 }
 '''
+
+def test_lexer(lexer):
+    while True:
+        tok = lexer.token()
+        if not tok:
+            break  # No more input
+        print(tok)
+
+lexer.input(entrada)
+# test_lexer(lexer)
+
 
 instrucciones = parse(entrada)
 ast = Tree_(instrucciones)
