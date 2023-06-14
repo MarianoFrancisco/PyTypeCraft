@@ -2,9 +2,9 @@ import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
-from src.Instruction.if_declaration import If_sentence
+from src.Instruction.if_declaration import IfSentence
 from src.Instruction.console_log import ConsoleLog
-from src.Semantic.symbol_table import Symbol_Table
+from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
 from src.Expression.identifier import Identifier
 from src.Semantic.tree import Tree_
@@ -132,15 +132,15 @@ def p_start_if(p):
 # if (true){instructions}
 def p_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE'
-    p[0] = If_sentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], None, None, p.lineno(1), find_column(input, p.slice[1]))
 # if (true){instructions} else{instructions}
 def p_if_else(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE LBRACE instructions RBRACE'
-    p[0] = If_sentence(p[2], p[5], p[9], None, p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], p[9], None, p.lineno(1), find_column(input, p.slice[1]))
 # if (true){instructions} else if (x){instructions}else if(x){instructions}
 def p_if_else_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE IF if'
-    p[0] = If_sentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = IfSentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
 
 '''Increment and decrement'''
 # i++, i--
@@ -251,7 +251,7 @@ lexer.input(entrada)
 
 instrucciones = parse(entrada)
 ast = Tree_(instrucciones)
-globalScope = Symbol_Table()
+globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 
 # for instruccion in ast.getInstr():
