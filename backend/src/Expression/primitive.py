@@ -3,10 +3,11 @@ from ..Abstract.abstract import Abstract
 
 class Primitive(Abstract):
 
-    def __init__(self, type, value, line, column):
-        self.type = type
-        self.value = value
+    def __init__(self, value, type, line, column):
         super().__init__(line, column)
+        self.value = value
+        self.type = type
 
-    def interpret(self, tree, table):
+    def execute(self, tree, table):
         return self.value
+    

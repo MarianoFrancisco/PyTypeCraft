@@ -8,5 +8,5 @@ class Abstract(ABC):
         self.column = column
 
     @abstractmethod
-    def interpret(self, tree, table):
+    def execute(self, tree, table):
         pass

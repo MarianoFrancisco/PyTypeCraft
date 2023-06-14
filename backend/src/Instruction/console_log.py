@@ -1,14 +1,13 @@
 from ..Abstract.abstract import Abstract
 
 
-class Print(Abstract):
+class ConsoleLog(Abstract):
 
     def __init__(self, expression, line, column):
         self.expression = expression  # <<Class.Primitivos>>
         super().__init__(line, column)
 
-    def interpret(self, tree, table):
-        value = self.expression.interpret(tree, table)
-        print(value)
+    def execute(self, tree, table):
+        value = self.expression.execute(tree, table)
         tree.updateConsole(str(value))
-        return value
+        return None
