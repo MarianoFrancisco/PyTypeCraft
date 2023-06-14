@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.variable_assignation import VariableAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
@@ -101,22 +102,24 @@ def p_print(p):
 
 #definir local, definir global , funcion, struct, console, while, for
 ''' Assignment '''
-''' With type'''
+def p_assignment(p):
+    'assignment : ID EQ expression'
+    p[0] = VariableAssignation(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
 # let a:String = "abc" let a:Number = [1,2,3]
 
-def p_assignment_type(p):
-    'assignment : LET ID COLON type EQ expression'
+''' Declaration'''
+def p_declaration_assignment_type(p):
+    'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
 #     p[0]
 
-def p_assignment_notype(p):
-    'assignment : LET ID EQ expression'
-    p[0] = VariableDeclaration(p[2], 'any', p[6], p.lineno(1), find_column(input, p.slice[1]))
+def p_declaration_assignment_notype(p):
+    'declaration : LET ID EQ expression'
+    p[0] = VariableDeclaration(p[2], 'any', p[4], p.lineno(1), find_column(input, p.slice[1]))
 
-''' Declaration'''
 
 # let a:String let
 
@@ -320,11 +323,9 @@ let val2:number = 10;
 let val3:number = 2021.2020;
 
 console.log("Probando declaracion de variables \n");
-
+console.log(val1);
 console.log("---------------------------------");
 // COMENTARIO DE UNA LINEA
-
-
 '''
 
 def test_lexer(lexer):

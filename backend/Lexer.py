@@ -110,7 +110,7 @@ def t_NUM_CONST(t):
 
 
 def t_STR_CONST(t):
-    r'(\".*?\")|(\'.*?\')|(\`.*?\`)'
+    r'(\"[\s\S]*?\")|(\'[\s\S]*?\')|(\`[\s\S]*?\`)'
     t.value = t.value[1:-1]
     t.value = t.value.replace('\\"', '\"')
     t.value = t.value.replace("\\'", "\'")
@@ -131,7 +131,7 @@ def t_ID(t):
 
 def t_comment(t):
     r'\/\/.*(\\n)?'
-    if ("\n" in t.value):
+    if ("\\n" in t.value):
         t.lexer.lineno += 1
 
 # MULTCOMMENT
