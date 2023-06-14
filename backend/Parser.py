@@ -180,8 +180,8 @@ def p_expression_operation(p):
         p[0] = BooleanOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
 
 ''' unary --3=-(-3)'''
-def p_expresion_unaria(p):
-    '''expresion : MINUS expression %prec UMINUS
+def p_expression_unaria(p):
+    '''expression : MINUS expression %prec UMINUS
                 | NOT expression %prec UNOT'''
     if p[1] == '-':
         p[0] = ArithmeticUnaryOperation(p[2], p[1], p.lineno(1), find_column(input, p.slice[1]))
@@ -232,16 +232,7 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = 5;
-let b:number = 3;
-
-if (a === b) {
-    console.log(a);
-}else if (a < b) {
-    console.log('else if');
-}else{
-    console.log('fin');
-}
+console.log(-1+5)
 '''
 
 def test_lexer(lexer):
