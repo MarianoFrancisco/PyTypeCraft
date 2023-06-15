@@ -217,6 +217,17 @@ def p_if_else_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE IF if'
     p[0] = IfSentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Loop for '''
+
+# for (let i=0;i<0;i++){instructions}
+def p_for(p):
+    'for: FOR LPAREN assignment SEMI expression SEMI expression RPAREN LBRACE instructions RBRACE'
+    p[0]
+# for (let i of id){instructions}
+def p_for_of(p):
+    'for: FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
+    p[0]
+
 # (3+2)*3
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
