@@ -26,14 +26,14 @@ class SymbolTable:
                 currentScope = currentScope.prevScope
         return None
 
-    def updateSymbol(self, id, value):
+    def updateSymbol(self, symbol):
         currentScope = self
         while currentScope != None:
-            if id in currentScope.table:
-                currentScope.table[id].value = value
+            if symbol.id in currentScope.table:
+                currentScope.table[symbol.id].value = symbol.value
                 return None
                 # Si necesitan cambiar el tipo de dato
                 # currentScope.table[symbol.id].setTipo(symbol.getTipo())
             else:
                 currentScope = currentScope.prevScope
-        return CompilerException("Semantico", f"Variable {id} no encontrada.", -1, -1)
+        return CompilerException("Semantico", f"Variable {id} no encontrada.", symbol.line, symbol.column)

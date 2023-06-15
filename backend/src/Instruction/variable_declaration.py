@@ -19,13 +19,13 @@ class VariableDeclaration(Abstract):
             elif type == 'string':
                 self.value = Primitive('', 'string', self.line, self.column)
             else:
-                self.value = Primitive('', 'any', self.line, self.column)
+                self.value = None
     
     def execute(self, tree, table):
         value = self.value.execute(tree, table)
         if isinstance(value, CompilerException): return value # Analisis Semantico -> Error
         # Verificacion de types
-        if str(self.type) == str(self.value.type):
+        if str(self.type) == 'any' or str(self.type) == str(self.value.type):
             symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
             result = table.addSymbol(symbol)
             if isinstance(result, CompilerException): return result
