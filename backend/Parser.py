@@ -6,6 +6,7 @@ from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnar
 from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
+from src.Instruction.loo_for import For
 from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
@@ -65,16 +66,18 @@ def p_instruccion(p):
                     | start_if SEMI
                     | function SEMI
                     | call_function SEMI
+                    | for SEMI
                     | return SEMI''' 
     p[0] = p[1]
 
-def p_instruccion_1(p):
+def p_instruccion_out_semi(p):
     '''instruction : print
                     | declaration
                     | assignment
                     | start_if
                     | function
                     | call_function
+                    | for
                     | return''' 
     p[0] = p[1]
 
@@ -221,11 +224,11 @@ def p_if_else_if(p):
 
 # for (let i=0;i<0;i++){instructions}
 def p_for(p):
-    'for: FOR LPAREN assignment SEMI expression SEMI expression RPAREN LBRACE instructions RBRACE'
-    p[0]
+    'for : FOR LPAREN declaration SEMI expression SEMI expression RPAREN LBRACE instructions RBRACE'
+    p[0] = For(p[3], p[5], p[7], p[10], p.lineno(1), find_column(input, p.slice[1]))
 # for (let i of id){instructions}
 def p_for_of(p):
-    'for: FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
+    'for : FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
     p[0]
 
 # (3+2)*3
@@ -332,41 +335,9 @@ def parse(inp):
 
 
 entrada = '''
-let val1:number = 1;
-let val2:number = 10;
-let val3:number = 2021.2020;
-
-console.log("Probando declaracion de variables \\n");
-console.log(val1, " ", val2, " ", val3);
-console.log("---------------------------------");
-
-val1 = val1 + 41 - 123 * 4 / (2 + 2 * 2) - (10 + (125 % 5)) * 2 ^ 2;
-val2 = 11 * (11 % (12 + -10)) + 22 / 2;
-val3 = 2 ^ (5 * 12 ^ 2) + 25 / 5;
-console.log("Probando asignación de variables y aritmeticas");
-console.log(val1, " ", val2, " ", val3);
-console.log("---------------------------------");
-
-let rel1:boolean = (((val1 - val2) === 24) && (true && (false || 5 >= 5))) || ((7*7) !== (15+555) || -61 > 51);
-let rel2:boolean = (7*7) <= (15+555) && 1 < 2;
-let rel3:boolean = ((0 === 0) !== ((532 > 532)) === ("Hola" === "Hola")) && (false || (!false));
-console.log("Probando relacionales y logicas");
-console.log(rel1, " ", rel2, " ", rel3);
-console.log("---------------------------------");
-
-console.log("OPERACIONES " , "CON " + "Cadenas");  // Otra forma de realizar el console.log
-let despedida = "Adios mundo :c";
-let saludo:string = "Hola Mundo! ";
-//console.log(saludo.toLowerCase() , despedida.toUpperCase());
-
-console.log("Probando algunas funciones nativas de PyTypeCraft");
-console.log("Funciones relacionadas a conversiones");
-let aprox_1 = 3.141516;
-//console.log(aprox_1.toFixed(3), aprox_1.toExponential(3));
-let carnet:string = "201903865";
-//console.log("Hola " + carnet.toString());
-//console.log(typeof(val1), " ", typeof(rel1)); // Esta funcion sera extra, la veremos en clase para que la implementen
-console.log("---------------------------------");
+for(let x:number=0;x<5;x++){
+    console.log("Hola")
+}
 '''
 
 def test_lexer(lexer):
