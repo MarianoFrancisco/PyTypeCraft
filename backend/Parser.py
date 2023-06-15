@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.loop_while import While
 from src.Instruction.variable_assignation import VariableAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
@@ -66,6 +67,7 @@ def p_instruccion(p):
                     | start_if SEMI
                     | function SEMI
                     | call_function SEMI
+                    | while SEMI
                     | for SEMI
                     | return SEMI''' 
     p[0] = p[1]
@@ -77,6 +79,7 @@ def p_instruccion_out_semi(p):
                     | start_if
                     | function
                     | call_function
+                    | while
                     | for
                     | return''' 
     p[0] = p[1]
@@ -231,6 +234,12 @@ def p_for_of(p):
     'for : FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
     p[0]
 
+''' Loop while'''
+# While(true){instructions}
+def p_while(p):
+    'while : WHILE LPAREN expression RPAREN LBRACE instructions RBRACE'
+    p[0] = While(p[3], p[6], p.lineno(1), find_column(input, p.slice[1]))
+
 # (3+2)*3
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
@@ -335,8 +344,10 @@ def parse(inp):
 
 
 entrada = '''
-for(let x:number;x<5;x++){
-    console.log("Hola")
+let a:number = 1;
+
+while(a < 10){
+    console.log('hola', a++);
 }
 '''
 
