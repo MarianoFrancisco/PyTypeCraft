@@ -335,7 +335,7 @@ def parse(inp):
 
 
 entrada = '''
-for(let x:number=0;x<5;x++){
+for(let x:number;x<5;x++){
     console.log("Hola")
 }
 '''

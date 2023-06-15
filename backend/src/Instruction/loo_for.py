@@ -32,7 +32,7 @@ class For(Abstract):
             if isinstance(variation, CompilerException): return variation
             symbol = Symbol(self.requirement.id, self.requirement.type, variation, self.line, self.column)
             # Actualizando el valor de la variable en la tabla de simbolos
-            value = entorn.updateSymbol(symbol.id,symbol)
+            value = entorn.updateSymbol(symbol)
 
             if isinstance(value, CompilerException): return value
 
