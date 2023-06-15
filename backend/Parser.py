@@ -217,16 +217,6 @@ def p_if_else_if(p):
     'if : LPAREN expression RPAREN LBRACE instructions RBRACE ELSE IF if'
     p[0] = IfSentence(p[2], p[5], None, p[9], p.lineno(1), find_column(input, p.slice[1]))
 
-'''Increment and decrement'''
-# i++, i--
-def p_expression_dec_inc(p):
-    '''expression : ID DBPLUS
-                | ID DBMINUS'''
-    if(p[2] =='++'):
-        p[0]
-    elif(p[2]=='--'):
-        p[0]
-
 # (3+2)*3
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
@@ -289,6 +279,18 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+
+'''Increment and decrement'''
+# i++, i--
+def p_expression_dec_inc(p):
+    '''expression : expression DBPLUS
+                | expression DBMINUS
+                '''
+    print('reconociendo incremento, decremento')
+    p[0] = ArithmeticUnaryOperation(p[1], p[2], p.lineno(2), find_column(input, p.slice[2]))
+
+
+
 '''Call function with other function'''
 
 def p_expresion_call_function(p):
@@ -301,7 +303,7 @@ def p_return(p):
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
 def p_error(t):
-    print(" Error sintáctico en '%s'" % t.value)
+    print(" Error sintáctico en '%s'" % t.value, t)
 
 
 input = ''
@@ -318,15 +320,9 @@ def parse(inp):
 
 
 entrada = '''
-let val1:number = 1;
-let val2:number = 10;
-let val3:number = 2021.2020;
-
-console.log("Probando declaracion de variables \n");
-console.log(val1);
-console.log(val1, val2);
-console.log("---------------------------------");
-// COMENTARIO DE UNA LINEA
+let a:number = 5
+console.log(a++)
+console.log(a)
 '''
 
 def test_lexer(lexer):
