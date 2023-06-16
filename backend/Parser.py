@@ -117,7 +117,7 @@ def p_declaration_assignment_type(p):
 
 def p_declaration_assignment_type_array(p):
     'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
-    p[0] = VariableDeclaration(p[2], p[4], p[8], p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -351,8 +351,9 @@ def parse(inp):
 
 
 entrada = '''
-let a:number[] = [1,2,3,4, 'hola'];
-console.log(a);
+let a = 5
+a= 'hola'
+console.log('hola'+'h')
 
 '''
 
