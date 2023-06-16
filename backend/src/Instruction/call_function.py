@@ -46,6 +46,8 @@ class CallFunction(Abstract):
                         return CompilerException("Semantico", "La funcion nativa toUpperCase unicamente acepta string como parametro", str(-1), str(-1))
                     elif(self.name=="toFixed"):
                         return CompilerException("Semantico", "La funcion nativa toFixed unicamente acepta number como parametros", str(-1), str(-1))
+                    elif(self.name=="split"):
+                        return CompilerException("Semantico", "La funcion nativa split unicamente acepta string como parametros", str(-1), str(-1))
                     else:
                         return CompilerException("Semantico", "Tipo de dato diferente en Parametros en la funcion "+self.name, str(self.line), str(self.column))
                 count += 1

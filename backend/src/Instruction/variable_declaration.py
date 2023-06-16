@@ -1,3 +1,4 @@
+from ..Expression.array import Array
 from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract

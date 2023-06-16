@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Expression.array import Array
 from src.Instruction.loop_while import While
 from src.Instruction.variable_assignation import VariableAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
@@ -17,6 +18,7 @@ from src.Native.native_typeof import TypeOf
 from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
 from src.Native.native_touppercase import ToUpperCase
+from src.Native.native_split import Split
 from src.Native.native_tofixed import ToFixed
 from src.Native.native_length import Length
 from src.Native.native_toexponential import ToExponential
@@ -99,10 +101,6 @@ def p_type(p):
             | BOOLEAN
             | STRING
             | ANY
-            | NUMBER LBRACE RBRACE
-            | BOOLEAN LBRACE RBRACE
-            | STRING LBRACE RBRACE
-            | ANY LBRACE RBRACE
             '''
     p[0]=p[1]
 
@@ -124,6 +122,10 @@ def p_assignment(p):
 def p_declaration_assignment_type(p):
     'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_declaration_assignment_type_array(p):
+    'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
+    p[0] = VariableDeclaration(p[2], p[4], p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -284,6 +286,12 @@ def p_expression_unaria(p):
     elif p[1] == '!':
         p[0] = BooleanUnaryOperation(p[2], p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Array Expression'''
+
+def p_expression_array(p):
+    'expression : LBRACKET parameters_call RBRACKET'
+    # CREAR EL ARRAY CON LOS DATOS QUE TRAE PARAMETER CALL
+    p[0] = Array(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Primivite '''
 # 1234
@@ -355,6 +363,11 @@ def add_natives(ast):
     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
     toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
     ast.setFunctions(toUpperCase)
+    #split
+    name = "split"
+    parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
+    split=Split(name,parameters,instructions,-1,-1)
+    ast.setFunctions(split)
     #toFixed
     name = "toFixed"
     parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
@@ -396,13 +409,16 @@ let c:number = 123.456;
 let d:boolean = true;
 let e:string = "MARIANO";
 let f:string = "mariano";
+let g:string = "abc,def,ghi,jkl";
+let h:number[] = [1,2,3,4];
+let i:number[] = [5,6,7,8];
 console.log(toFixed(a,length(b)))
 console.log(length(b))
 console.log(toExponential(c,2))
 console.log(typeof(toString(d)))
 console.log(toLowerCase(e))
 console.log(toUpperCase(f))
-
+console.log(split(g,","))
 '''
 
 def test_lexer(lexer):
@@ -435,3 +451,5 @@ for instruccion in ast.getInstr():
     if isinstance(value, CompilerException):
         ast.setExceptions(value) """
 print(ast.getConsole())
+for err in ast.getExceptions():
+    print(err)
