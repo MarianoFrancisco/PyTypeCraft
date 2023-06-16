@@ -13,6 +13,13 @@ from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
 from src.Expression.identifier import Identifier
+from src.Native.native_typeof import TypeOf
+from src.Native.native_tostring import ToString
+from src.Native.native_tolowercase import ToLowerCase
+from src.Native.native_touppercase import ToUpperCase
+from src.Native.native_tofixed import ToFixed
+from src.Native.native_length import Length
+from src.Native.native_toexponential import ToExponential
 from src.Semantic.tree import Tree_
 from src.Expression.primitive import Primitive
 from src.Expression.binary_operation import ArithmeticOperation, BooleanOperation
@@ -326,6 +333,45 @@ def p_return(p):
     'return : RETURN expression'
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+def add_natives(ast):
+    instructions=[]
+    #typeof
+    name = "typeof"
+    parameter=[{'type': 'any', 'id': 'typeof#parameter'}]
+    typeof=TypeOf(name,parameter,instructions,-1,-1)
+    ast.setFunctions(typeof)
+    #toString
+    name = "toString"
+    parameter=[{'type': 'any', 'id': 'tostring#parameter'}]
+    toString=ToString(name,parameter,instructions,-1,-1)
+    ast.setFunctions(toString)
+    #toLowerCase
+    name = "toLowerCase"
+    parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
+    toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
+    ast.setFunctions(toLowerCase)
+    #toUpperCase
+    name = "toUpperCase"
+    parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
+    toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
+    ast.setFunctions(toUpperCase)
+    #toFixed
+    name = "toFixed"
+    parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
+    toFixed=ToFixed(name,parameters,instructions,-1,-1)
+    ast.setFunctions(toFixed)
+    #length
+    name = "length"
+    parameter=[{'type': 'string', 'id': 'length#parameter'}]
+    length=Length(name,parameter,instructions,-1,-1)
+    ast.setFunctions(length)
+    #toExponential
+    name = "toExponential"
+    parameters=[{'type': 'number', 'id': 'toexponential#parameter'},{'type':'number', 'id':'toexponential#parameter2'}]
+    toExponential=ToExponential(name,parameters,instructions,-1,-1)
+    ast.setFunctions(toExponential)
+
+
 def p_error(t):
     print(" Error sintáctico en '%s'" % t.value, t)
 
@@ -344,11 +390,19 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = 1;
+let a:number = 1.4231243123;
+let b:string = "Mariano";
+let c:number = 123.456;
+let d:boolean = true;
+let e:string = "MARIANO";
+let f:string = "mariano";
+console.log(toFixed(a,length(b)))
+console.log(length(b))
+console.log(toExponential(c,2))
+console.log(typeof(toString(d)))
+console.log(toLowerCase(e))
+console.log(toUpperCase(f))
 
-while(a < 10){
-    console.log('hola', a++);
-}
 '''
 
 def test_lexer(lexer):
@@ -366,6 +420,7 @@ instrucciones = parse(entrada)
 ast = Tree_(instrucciones)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
+add_natives(ast)
 
 for instruccion in ast.getInstr():     
     if isinstance(instruccion, Function):

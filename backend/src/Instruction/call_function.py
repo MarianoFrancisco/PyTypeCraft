@@ -25,11 +25,29 @@ class CallFunction(Abstract):
                 
                 if function.parameters[count]['type'] == expression.type:
                     symbol = Symbol(str(function.parameters[count]['id']), expression.type, result_expression, self.line, self.column)
-                    
+                    result = entorn.setTableFunction(symbol)
+                    if isinstance(result, CompilerException): return result
+                elif function.parameters[count]['type']=='any':
+                    symbol = Symbol(str(function.parameters[count]['id']), expression.type, result_expression, self.line, self.column)
+                    result = entorn.setTableFunction(symbol)
+                    if isinstance(result, CompilerException): return result
+                elif function.parameters[count]["type"]=="NoType":
+                    symbol = Symbol(str(function.parameters[count]['id']), expression.type, result_expression, self.line, self.column)
                     result = entorn.setTableFunction(symbol)
                     if isinstance(result, CompilerException): return result
                 else:
-                    return CompilerException("Semantico", "Tipo de dato diferente en Parametros", str(self.line), str(self.column))
+                    if(self.name=="toLowerCase"):
+                        return CompilerException("Semantico", "La funcion nativa toLowerCase unicamente acepta string como parametro", str(-1), str(-1))
+                    elif(self.name=="length"):
+                        return CompilerException("Semantico", "La funcion nativa length unicamente acepta string o array como parametro", str(-1), str(-1))
+                    elif(self.name=="toExponential"):
+                        return CompilerException("Semantico", "La funcion nativa toExponential unicamente acepta string como parametros", str(-1), str(-1))
+                    elif(self.name=="toUpperCase"):
+                        return CompilerException("Semantico", "La funcion nativa toUpperCase unicamente acepta string como parametro", str(-1), str(-1))
+                    elif(self.name=="toFixed"):
+                        return CompilerException("Semantico", "La funcion nativa toFixed unicamente acepta number como parametros", str(-1), str(-1))
+                    else:
+                        return CompilerException("Semantico", "Tipo de dato diferente en Parametros en la funcion "+self.name, str(self.line), str(self.column))
                 count += 1
         
         value = function.execute(tree, entorn) # me puede retornar un valor
