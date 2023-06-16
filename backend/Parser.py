@@ -18,6 +18,7 @@ from src.Native.native_typeof import TypeOf
 from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
 from src.Native.native_touppercase import ToUpperCase
+from src.Native.native_push import Push
 from src.Native.native_split import Split
 from src.Native.native_tofixed import ToFixed
 from src.Native.native_length import Length
@@ -363,6 +364,11 @@ def add_natives(ast):
     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
     toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
     ast.setFunctions(toUpperCase)
+    #push
+    name = "push"
+    parameters=[{'type': 'any', 'id': 'push#parameter'},{'type':'NoType', 'id':'push#parameter2'}]
+    push=Push(name,parameters,instructions,-1,-1)
+    ast.setFunctions(push)
     #split
     name = "split"
     parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
@@ -419,6 +425,8 @@ console.log(typeof(toString(d)))
 console.log(toLowerCase(e))
 console.log(toUpperCase(f))
 console.log(split(g,","))
+push(h,3)
+console.log(h)
 '''
 
 def test_lexer(lexer):
