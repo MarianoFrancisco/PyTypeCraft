@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Expression.array import Array
 from src.Instruction.loop_while import While
 from src.Instruction.variable_assignation import VariableAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
@@ -92,10 +93,6 @@ def p_type(p):
             | BOOLEAN
             | STRING
             | ANY
-            | NUMBER LBRACE RBRACE
-            | BOOLEAN LBRACE RBRACE
-            | STRING LBRACE RBRACE
-            | ANY LBRACE RBRACE
             '''
     p[0]=p[1]
 
@@ -117,6 +114,10 @@ def p_assignment(p):
 def p_declaration_assignment_type(p):
     'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_declaration_assignment_type_array(p):
+    'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
+    p[0] = VariableDeclaration(p[2], p[4], p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -277,6 +278,12 @@ def p_expression_unaria(p):
     elif p[1] == '!':
         p[0] = BooleanUnaryOperation(p[2], p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Array Expression'''
+
+def p_expression_array(p):
+    'expression : LBRACKET parameters_call RBRACKET'
+    # CREAR EL ARRAY CON LOS DATOS QUE TRAE PARAMETER CALL
+    p[0] = Array(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Primivite '''
 # 1234
@@ -344,11 +351,9 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = 1;
+let a:number[] = [1,2,3,4, 'hola'];
+console.log(a);
 
-while(a < 10){
-    console.log('hola', a++);
-}
 '''
 
 def test_lexer(lexer):
@@ -380,3 +385,5 @@ for instruccion in ast.getInstr():
     if isinstance(value, CompilerException):
         ast.setExceptions(value) """
 print(ast.getConsole())
+for err in ast.getExceptions():
+    print(err)
