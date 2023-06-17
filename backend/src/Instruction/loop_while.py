@@ -1,3 +1,4 @@
+from ..Instruction.reserved_return import ReservedReturn
 from ..Semantic.symbol_table import SymbolTable
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
@@ -33,8 +34,8 @@ class While(Abstract):
                     # if isinstance(value, Break):
                     #     return None
 
-                    # if isinstance(value, Return):
-                    #     return value
+                    if isinstance(value, ReservedReturn):
+                        return value
 
                     # if isinstance(value, Continue):
                     #     break

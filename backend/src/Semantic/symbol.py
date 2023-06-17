@@ -19,6 +19,9 @@ class AbstractSymbol(ABC):
     @abstractmethod
     def getType(self): pass
 
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 class Symbol(AbstractSymbol):
     # type puede ser solo number, string, boolean
@@ -34,6 +37,9 @@ class Symbol(AbstractSymbol):
 
     def getType(self):
         return self.type
+
+    def __str__(self) -> str:
+        return str(self.value)
 
 # clase para identificar a los simbolos que son arreglos
 class ArraySymbol(AbstractSymbol):

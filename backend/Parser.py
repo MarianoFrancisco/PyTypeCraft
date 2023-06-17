@@ -1,5 +1,7 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.reserved_break import ReservedBreak
+from src.Instruction.reserved_continue import ReservedContinue
 from src.Expression.array import Array
 from src.Instruction.loop_while import While
 from src.Instruction.variable_assignation import VariableAssignation
@@ -8,12 +10,12 @@ from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnar
 from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
-from src.Instruction.loo_for import For
+from src.Instruction.loo_for import For, ForOf
 from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
-from src.Expression.identifier import Identifier
+from src.Expression.identifier import Identifier, IdentifierArray
 from src.Native.native_typeof import TypeOf
 from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
@@ -78,6 +80,8 @@ def p_instruccion(p):
                     | call_function SEMI
                     | while SEMI
                     | for SEMI
+                    | continue SEMI
+                    | break SEMI
                     | return SEMI''' 
     p[0] = p[1]
 
@@ -90,6 +94,8 @@ def p_instruccion_out_semi(p):
                     | call_function
                     | while
                     | for
+                    | continue
+                    | break
                     | return''' 
     p[0] = p[1]
 
@@ -241,13 +247,28 @@ def p_for(p):
 # for (let i of id){instructions}
 def p_for_of(p):
     'for : FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
-    p[0]
+    p[0] = ForOf(p[3], p[5], p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Loop while'''
 # While(true){instructions}
 def p_while(p):
     'while : WHILE LPAREN expression RPAREN LBRACE instructions RBRACE'
     p[0] = While(p[3], p[6], p.lineno(1), find_column(input, p.slice[1]))
+
+''' array indexes'''
+def indexes_array(p):
+    'indexes_array : indexes_array index_array'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+def indexes_array_1(p):
+    'indexes_array : index_array'
+    p[0] = [p[1]]
+
+def index_array(p):
+    'index_array : LBRACKET expression RBRACKET'
+    p[0] = p[2]
+
 
 # (3+2)*3
 def p_expression_paren(p):
@@ -318,6 +339,11 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+# # asdf1234
+# def p_expression_id_array(p):
+#     'expression : ID indexes_array'
+#     p[0] = IdentifierArray(p[1], p.lineno(1), find_column(input, p.slice[1]))
+
 
 '''Increment and decrement'''
 # i++, i--
@@ -325,7 +351,6 @@ def p_expression_dec_inc(p):
     '''expression : expression DBPLUS
                 | expression DBMINUS
                 '''
-    print('reconociendo incremento, decremento')
     p[0] = ArithmeticUnaryOperation(p[1], p[2], p.lineno(2), find_column(input, p.slice[2]))
 
 
@@ -340,6 +365,16 @@ def p_expresion_call_function(p):
 def p_return(p):
     'return : RETURN expression'
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+''' Continue '''
+def p_continue(p):
+    'continue : CONTINUE'
+    p[0] = ReservedContinue(p.lineno(1), find_column(input, p.slice[1]))
+
+''' Break '''
+def p_break(p):
+    'break : BREAK'
+    p[0] = ReservedBreak(p.lineno(1), find_column(input, p.slice[1]))
 
 def add_natives(ast):
     instructions=[]
@@ -403,22 +438,12 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = 1.4231243123;
-let b:string = "Mariano";
-let c:number = 123.456;
-let d:boolean = true;
-let e:string = "MARIANO";
-let f:string = "mariano";
-let g:string = "abc,def,ghi,jkl";
-let h:number[] = [1,2,3,4];
-let i:number[] = [5,6,7,8];
-console.log(toFixed(a,length(b)))
-console.log(length(b))
-console.log(toExponential(c,2))
-console.log(typeof(toString(d)))
-console.log(toLowerCase(e))
-console.log(toUpperCase(f))
-console.log(split(g,","))
+
+for (let x of 'Hola mundo'){
+    console.log(x)
+}
+
+
 '''
 
 def test_lexer(lexer):

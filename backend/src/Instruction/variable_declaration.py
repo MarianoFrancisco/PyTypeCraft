@@ -20,7 +20,7 @@ class VariableDeclaration(Abstract):
             elif type == 'string':
                 self.value = Primitive('', 'string', self.line, self.column)
             else:
-                self.value = None
+                self.value = Primitive('', 'any', self.line, self.column)
     
     def execute(self, tree, table):
         value = self.value.execute(tree, table)

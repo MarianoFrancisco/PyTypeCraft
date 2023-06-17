@@ -1,3 +1,5 @@
+from ..Instruction.reserved_break import ReservedBreak
+from ..Instruction.reserved_continue import ReservedContinue
 from ..Semantic.exception import CompilerException
 from ..Semantic.symbol_table import SymbolTable
 from ..Abstract.abstract import Abstract
@@ -24,6 +26,8 @@ class IfSentence(Abstract):
                 if isinstance(result, CompilerException) :
                     tree.setExceptions(result)
                 if isinstance(result, ReservedReturn): return result
+                if isinstance(result, ReservedBreak): return result
+                if isinstance(result, ReservedContinue): return result
         elif self.elseBlock != None:
             scope = SymbolTable(table)
             for instruccion in self.elseBlock:
@@ -31,6 +35,10 @@ class IfSentence(Abstract):
                 if isinstance(result, CompilerException) :
                     tree.setExceptions(result)
                 if isinstance(result, ReservedReturn): return result
+                if isinstance(result, ReservedBreak): return result
+                if isinstance(result, ReservedContinue): return result
         elif self.elseIfBlock != None:
             result = self.elseIfBlock.execute(tree, table)
             if isinstance(result, ReservedReturn): return result
+            if isinstance(result, ReservedBreak): return result
+            if isinstance(result, ReservedContinue): return result
