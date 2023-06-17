@@ -7,6 +7,7 @@ errors = []
 keywords = {
     'console': 'CONSOLE',
     'log': 'LOG',
+    'concat': 'CONCAT',
     'null': 'NULL',
     'number': 'NUMBER',
     'boolean': 'BOOLEAN',

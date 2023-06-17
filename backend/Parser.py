@@ -20,6 +20,8 @@ from src.Native.native_typeof import TypeOf
 from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
 from src.Native.native_touppercase import ToUpperCase
+from src.Native.native_push import Push
+from src.Instruction.concat import Concat
 from src.Native.native_split import Split
 from src.Native.native_tofixed import ToFixed
 from src.Native.native_length import Length
@@ -110,6 +112,12 @@ def p_type(p):
             '''
     p[0]=p[1]
 
+''' Concat '''
+
+def p_concat(p):
+    'concat : CONCAT LPAREN parameters_call RPAREN'
+    p[0] = Concat(p[3],p.lineno(1), find_column(input, p.slice[1]))
+
 ''' Print'''
 
 def p_print(p):
@@ -175,6 +183,10 @@ def p_call_function_parameters(p):
 def p_call_function(p):
     'call_function : ID LPAREN RPAREN'
     p[0]= CallFunction(p[1],[],p.lineno(1), find_column(input, p.slice[1]))
+
+def p_call_concat(p):
+    'call_function : concat'
+    p[0]=p[1]
 
 ''' Parameters Function'''
 
@@ -398,6 +410,11 @@ def add_natives(ast):
     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
     toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
     ast.setFunctions(toUpperCase)
+    #push
+    name = "push"
+    parameters=[{'type': 'any', 'id': 'push#parameter'},{'type':'NoType', 'id':'push#parameter2'}]
+    push=Push(name,parameters,instructions,-1,-1)
+    ast.setFunctions(push)
     #split
     name = "split"
     parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
@@ -444,6 +461,10 @@ for (let x of 'Hola mundo'){
 }
 
 
+console.log(h)
+console.log(concat(h,i))
+push(h,3)
+console.log(h)
 '''
 
 def test_lexer(lexer):
