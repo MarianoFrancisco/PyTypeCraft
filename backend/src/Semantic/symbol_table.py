@@ -31,6 +31,7 @@ class SymbolTable:
         while currentScope != None:
             if symbol.id in currentScope.table:
                 currentScope.table[symbol.id].value = symbol.value
+                currentScope.table[symbol.id].type = symbol.type
                 return None
                 # Si necesitan cambiar el tipo de dato
                 # currentScope.table[symbol.id].setTipo(symbol.getTipo())

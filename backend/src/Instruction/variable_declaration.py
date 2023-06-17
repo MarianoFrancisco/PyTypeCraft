@@ -2,7 +2,7 @@ from ..Expression.array import Array
 from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
-from ..Semantic.symbol import Symbol
+from ..Semantic.symbol import Symbol, ArraySymbol, AnySymbol
 
 class VariableDeclaration(Abstract):
 
@@ -26,11 +26,24 @@ class VariableDeclaration(Abstract):
         value = self.value.execute(tree, table)
         if isinstance(value, CompilerException): return value # Analisis Semantico -> Error
         # Verificacion de types
-        if str(self.type) == 'any' or str(self.type) == str(self.value.type):
-            symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
+        if 'Array' in self.type and not isinstance(self.value, Array):
+            return CompilerException("Semantico", f"La expresion {value} no puede asignarse a '{self.id}', ya que no es un arreglo", self.line, self.column)
+        if self.type != 'any' and not ('Array' in self.type) and isinstance(self.value, Array):
+            return CompilerException("Semantico", f"La variable '{self.id}' no se le puede asignar un arreglo", self.line, self.column)
+        if 'any' in str(self.type) or str(self.value.type) in str(self.type):
+            symbol = None
+            if 'any' in self.type:
+                symbol = AnySymbol(str(self.id), self.value.type, value, self.line, self.column)
+                if isinstance(self.value, Array):
+                    symbol.type = f'Array<{self.value.type}>'  
+            elif isinstance(self.value, Array):
+                symbol = ArraySymbol(str(self.id), self.value.type, value, self.line, self.column)
+            else:
+                symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
             result = table.addSymbol(symbol)
             if isinstance(result, CompilerException): return result
             return None
         else:
             result = CompilerException("Semantico", "Tipo de dato diferente declarado.", self.line, self.column)
             return result
+    
