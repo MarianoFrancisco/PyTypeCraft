@@ -1,6 +1,5 @@
 from ..Semantic.exception import CompilerException
 from ..Instruction.function import Function
-from ..Semantic.symbol import Symbol
 
 class Push(Function):
 
