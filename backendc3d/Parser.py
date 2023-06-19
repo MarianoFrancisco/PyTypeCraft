@@ -25,6 +25,7 @@ from src.Native.native_tofixed import ToFixed
 from src.Native.native_length import Length
 from src.Native.native_toexponential import ToExponential
 from src.Semantic.tree import Tree_
+from src.Semantic.c3d_generator import C3DGenerator
 from src.Expression.primitive import Primitive
 from src.Expression.binary_operation import ArithmeticOperation, BooleanOperation
 
@@ -420,26 +421,9 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = 1.4231243123;
-let b:string = "Mariano";
-let c:number = 123.456;
-let d:boolean = true;
-let e:string = "MARIANO";
-let f:string = "mariano";
-let g:string = "abc,def,ghi,jkl";
-let h:number[] = [1,2,3,4];
-let i:number[] = [5,6,7,8];
-console.log(toFixed(a,length(b)))
-console.log(length(b))
-console.log(toExponential(c,2))
-console.log(typeof(toString(d)))
-console.log(toLowerCase(e))
-console.log(toUpperCase(f))
-console.log(split(g,","))
-console.log(h)
-console.log(concat(h,i))
-push(h,3)
-console.log(h)
+let a:number=3;
+let b:number=5;
+console.log(a+b);
 '''
 
 def test_lexer(lexer):
@@ -451,26 +435,28 @@ def test_lexer(lexer):
 
 lexer.input(entrada)
 # test_lexer(lexer)
+callGenerator=C3DGenerator()
+callGenerator.clear()#Every ejecut clean all
+generator=callGenerator.getGenerator()
 
-
-instrucciones = parse(entrada)
-ast = Tree_(instrucciones)
+instructions = parse(entrada)
+ast = Tree_(instructions)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 add_natives(ast)
 
-for instruccion in ast.getInstr():     
-    if isinstance(instruccion, Function):
-        ast.setFunctions(instruccion)
+for instruction in ast.getInstr():     
+    if isinstance(instruction, Function):
+        ast.setFunctions(instruction)
 
-for instruccion in ast.getInstr():
-    if not(isinstance(instruccion, Function)):
-        value = instruccion.execute(ast,globalScope)
+for instruction in ast.getInstr():
+    if not(isinstance(instruction, Function)):
+        value = instruction.execute(ast,globalScope)
         if isinstance(value, CompilerException):
             ast.setExceptions(value)
     """ value = instruccion.execute(ast,globalScope)
     if isinstance(value, CompilerException):
         ast.setExceptions(value) """
-print(ast.getConsole())
+print(generator.getCode())
 for err in ast.getExceptions():
     print(err)

@@ -90,6 +90,6 @@ class C3DGenerator:
     ''' Console log'''
     def addConsoleLog(self, type, value):#type !%d=integer, %f=float, %c=character & %s=string
         self.setImport('fmt')
-        self.codeIn(f'fmt.Printf("%{type}", int({value}));\n')
+        self.code+=f'fmt.Printf("%{type}", int({value}));\n'
 
 # console.log(4+5*6);
