@@ -421,9 +421,8 @@ def parse(inp):
 
 
 entrada = '''
-let a:number=3;
-let b:number=5;
-console.log(a+b);
+let a:string="Hola";
+console.log(a)
 '''
 
 def test_lexer(lexer):

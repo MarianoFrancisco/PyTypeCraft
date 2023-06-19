@@ -37,7 +37,7 @@ class VariableDeclaration(Abstract):
             return CompilerException("Semantico", f"La variable '{self.id}' no se le puede asignar un arreglo", self.line, self.column)
         if 'any' in str(self.type) or str(self.value.type) in str(self.type):
             inHeap=True
-            symbol = table.setTable(self.id,value.getType(),inHeap,self.search)
+            symbol = table.setTable(self.id,value.type,inHeap,self.search)
         else:
             generator.addNewComment('Error: Tipo de dato es diferente al declarado')
             result = CompilerException("Semantico", "Tipo de dato es diferente al declarado", self.line, self.column)
