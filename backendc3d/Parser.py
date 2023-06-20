@@ -421,7 +421,7 @@ def parse(inp):
 
 
 entrada = '''
-let a:string="Hola mundo de compiladores 2";
+let a:string="Hola Melanni";
 console.log(a)
 '''
 
@@ -443,8 +443,6 @@ ast = Tree_(instructions)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 add_natives(ast)
-
-
 
 for instruction in ast.getInstr():
     value = instruction.execute(ast,globalScope)

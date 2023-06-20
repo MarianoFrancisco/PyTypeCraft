@@ -12,10 +12,8 @@ class ConsoleLog(Abstract):
         callGenerator=C3DGenerator()
         generator=callGenerator.getGenerator()
         #value = self.params.execute(tree, table)
-        result = ''
         for param in self.params:
             value = param.execute(tree, table)
-            result += str(value) + ' ' 
             if isinstance(value,CompilerException):return value
             if value.getType()=="number":
                 generator.addConsoleLog('f',value.getValue())
@@ -34,5 +32,3 @@ class ConsoleLog(Abstract):
                 generator.returnEnvironment(table.size)
             elif value.getType()=="boolean":
                 generator.addConsoleLog('t',value.getValue().lower())
-        tree.updateConsole(result.strip())
-        return None

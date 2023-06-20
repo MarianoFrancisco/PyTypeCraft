@@ -22,7 +22,7 @@ class C3DGenerator:
     #Get generator
     def getGenerator(self):
         if C3DGenerator.generator == None:
-            C3DGenerator.generator = C3DGenerator
+            C3DGenerator.generator = C3DGenerator()
         return C3DGenerator.generator
     #clean
     def clear(self):
@@ -48,7 +48,8 @@ class C3DGenerator:
             self.startImports.remove(librery)
         else:
             return
-        code=f'import(\n\t"{librery}"\n)\n'#formato
+        code=f'import(\n\t"{librery}"\n);\n'#formato
+        self.imports.append(code)
     #get header
     def getHead(self):
         len_imports=len(self.imports)
@@ -74,7 +75,7 @@ class C3DGenerator:
             if self.natives == '':
                 self.natives = self.natives + '/* Start Natives */\n'
             self.natives=self.natives+ident+code
-        if self.onFunction:
+        elif self.onFunction:
             if self.functions == '':
                 self.functions = self.functions + '/* Start Functions */\n'
             self.functions=self.functions+ident+code  
@@ -112,7 +113,7 @@ class C3DGenerator:
         self.whereAddCode(f'{label}:\n')
     # Space ident
     def addSpaceIdent(self):
-        self.whereAddCode('')
+        self.whereAddCode("")
     ''' Goto '''
     def addGotoLabel(self,label):
         self.whereAddCode(f'goto {label};\n')
@@ -122,7 +123,7 @@ class C3DGenerator:
         self.whereAddCode(f'/* New Environment */\nP = P + {size};\n')
     #Return environment
     def returnEnvironment(self,size):#size for environment
-        self.whereAddCode('P = P - {size};\n/* Return Environment */\n')
+        self.whereAddCode(f'P = P - {size};\n/* Return Environment */\n')
     ''' Assignament '''
     def addNewAssignament(self,temporary,left):
         self.whereAddCode(f'{temporary} = {left};\n')
@@ -131,10 +132,10 @@ class C3DGenerator:
         self.whereAddCode(f'if {left} {operator} {right} {{goto {label};}}\n')
     ''' Functions'''
     def addStartFunction(self,id):
-        if not self.onNative:#If not native is a normal function
+        if (not self.onNative):#If not native is a normal function
             self.onFunction=True
         self.whereAddCode(f'func {id}(){{\n','')
-    def addEndFunctoin(self):
+    def addEndFunction(self):
         if not self.onNative:
             self.onFunction=False
         self.whereAddCode('\n}\n')
@@ -149,13 +150,13 @@ class C3DGenerator:
             self.whereAddCode(f'{temporary} = {left} != {right};\n')
         else:
             self.whereAddCode(f'{temporary} = {left} {operator} {right};\n')
-    ''' Call function'''
+    ''' Call function '''
     def callFunction(self,id):
         self.whereAddCode(f'{id}();\n')
-    ''' Console log'''
+    ''' Console log '''
     def addConsoleLog(self, type, value):#type !%t=boolean, %f=float, %c=character & %s=string
         self.setImport('fmt')
-        self.whereAddCode(f'fmt.Printf("%{type}", {value});\n')
+        self.whereAddCode(f'fmt.Printf("%{type}", int({value}));\n')
     ''' Natives '''
     def consoleString(self):
         self.setImport('fmt')
@@ -183,6 +184,6 @@ class C3DGenerator:
         self.addNewExpression(temporaryHeap,temporaryHeap,'+','1')#Plus one to heap
         self.addGotoLabel(compareLabel)
         self.defineLabel(returnLabel)
-        self.addEndFunctoin()
+        self.addEndFunction()
         self.onNative=False
 
