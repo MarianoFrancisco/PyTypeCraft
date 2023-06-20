@@ -421,7 +421,7 @@ def parse(inp):
 
 
 entrada = '''
-let a:string="Hola";
+let a:string="Hola mundo de compiladores 2";
 console.log(a)
 '''
 
@@ -444,18 +444,12 @@ globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
 add_natives(ast)
 
-for instruction in ast.getInstr():     
-    if isinstance(instruction, Function):
-        ast.setFunctions(instruction)
+
 
 for instruction in ast.getInstr():
-    if not(isinstance(instruction, Function)):
-        value = instruction.execute(ast,globalScope)
-        if isinstance(value, CompilerException):
-            ast.setExceptions(value)
-    """ value = instruccion.execute(ast,globalScope)
+    value = instruction.execute(ast,globalScope)
     if isinstance(value, CompilerException):
-        ast.setExceptions(value) """
+        ast.setExceptions(value)
 print(generator.getCode())
 for err in ast.getExceptions():
     print(err)

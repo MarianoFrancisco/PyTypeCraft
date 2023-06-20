@@ -36,7 +36,7 @@ class VariableDeclaration(Abstract):
         if self.type != 'any' and not ('Array' in self.type) and isinstance(self.value, Array):
             return CompilerException("Semantico", f"La variable '{self.id}' no se le puede asignar un arreglo", self.line, self.column)
         if 'any' in str(self.type) or str(self.value.type) in str(self.type):
-            inHeap=True
+            inHeap=value.getType()=='string' or value.getType()=='interface'
             symbol = table.setTable(self.id,value.type,inHeap,self.search)
         else:
             generator.addNewComment('Error: Tipo de dato es diferente al declarado')

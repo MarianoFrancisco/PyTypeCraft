@@ -20,7 +20,18 @@ class ConsoleLog(Abstract):
             if value.getType()=="number":
                 generator.addConsoleLog('f',value.getValue())
             elif value.getType()=="string":
-                generator.addConsoleLog('s',f'"{value.getValue()}"')
+                generator.consoleString()
+                temporaryParameter=generator.addNewTemporary()
+                generator.addNewExpression(temporaryParameter,'P','+',table.size)
+                generator.addNewExpression(temporaryParameter,temporaryParameter,'+',1,)
+                #save to stack
+                generator.setStack(temporaryParameter,value.getValue())
+                generator.newEnvironment(table.size)#new entorn
+                generator.callFunction('consoleLogString')
+                temporary=generator.addNewTemporary()
+                generator.getStack(temporary,'P')
+                #Return environment
+                generator.returnEnvironment(table.size)
             elif value.getType()=="boolean":
                 generator.addConsoleLog('t',value.getValue().lower())
         tree.updateConsole(result.strip())
