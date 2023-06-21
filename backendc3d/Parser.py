@@ -27,7 +27,7 @@ from src.Native.native_toexponential import ToExponential
 from src.Semantic.tree import Tree_
 from src.Semantic.c3d_generator import C3DGenerator
 from src.Expression.primitive import Primitive
-from src.Expression.binary_operation import ArithmeticOperation, BooleanOperation
+from src.Expression.binary_operation import ArithmeticOperation, RelationalOperation, LogicOperation
 
 precedence = (
     ('left', 'OR'),
@@ -287,8 +287,10 @@ def p_expression_operation(p):
                     '''
     if p[2] in ['+', '-', '*', '/', '%', '^']:
         p[0] = ArithmeticOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
+    elif p[2] in ['=', '===', '!==', '<', '>', '<=','>=']:
+        p[0] = RelationalOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
     else:
-        p[0] = BooleanOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
+        p[0] = LogicOperation(p[1], p[3], p[2], p.lineno(2), find_column(input, p.slice[2]))
 
 ''' unary --3=-(-3)'''
 def p_expression_unaria(p):
@@ -421,8 +423,9 @@ def parse(inp):
 
 
 entrada = '''
-let a:string="Hola Melanni";
-console.log(a)
+let a:string="adios";
+let b:string="hola";
+console.log(a!==b)
 '''
 
 def test_lexer(lexer):

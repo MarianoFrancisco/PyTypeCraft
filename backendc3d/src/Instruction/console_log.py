@@ -31,4 +31,11 @@ class ConsoleLog(Abstract):
                 #Return environment
                 generator.returnEnvironment(table.size)
             elif value.getType()=="boolean":
-                generator.addConsoleLog('t',value.getValue().lower())
+                temporaryLabel=generator.addNewLabel()
+                generator.defineLabel(value.getLabelTrue())
+                generator.consoleTrue()
+                generator.addGotoLabel(temporaryLabel)
+                generator.defineLabel(value.getLabelFalse())
+                generator.consoleFalse()
+                generator.defineLabel(temporaryLabel)
+        generator.addConsoleLog('c',10)

@@ -40,7 +40,7 @@ class ReturnData:
     def setTrueLbl(self, labelTrue):
         self.labelTrue = labelTrue
 
-    def getLabelFlase(self):
+    def getLabelFalse(self):
         return self.labelFalse
     def setFalseLbl(self, labelFalse):
         self.labelFalse = labelFalse

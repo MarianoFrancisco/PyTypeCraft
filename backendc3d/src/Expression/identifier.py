@@ -24,7 +24,24 @@ class Identifier(Abstract):
             temporaryPosition=generator.addNewTemporary()
             generator.addNewExpression(temporaryPosition, 'P', symbol.position, '+')
         generator.getStack(temporary,temporaryPosition)
-        result= ReturnData(temporary,symbol.type,True)
+        if (symbol.type!='boolean'):
+            returnData= ReturnData(temporary,symbol.type,True)
+            generator.addNewComment('End access id')
+            generator.addNewLine()
+            return returnData
+        if self.labelTrue=='':
+            self.labelTrue=generator.addNewLabel()
+        if self.labelFalse=='':
+            self.labelFalse=generator.addNewLabel()
+        #if temporary equal one goto true else goto false
+        generator.addNewIf(temporary,'1','==',self.labelTrue)
+        generator.addGotoLabel(self.labelFalse)
         generator.addNewComment('End access id')
-        return result
+        generator.addNewLine()
+        #Return the boolean
+        returnData= ReturnData(temporary,'boolean',True)
+        returnData.labelTrue=self.labelTrue
+        returnData.labelFalse=self.labelFalse
+        return returnData
+        
         
