@@ -1,7 +1,5 @@
 from ..Semantic.symbol import Symbol
 from ..Semantic.c3d_generator import C3DGenerator
-from ..Expression.primitive import Primitive
-from ..Instruction.variable_assignation import VariableAssignation
 from ..Expression.identifier import Identifier
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract

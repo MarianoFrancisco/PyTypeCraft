@@ -22,7 +22,7 @@ class Identifier(Abstract):
         temporaryPosition=symbol.position
         if not symbol.isGlobal:
             temporaryPosition=generator.addNewTemporary()
-            generator.addNewExpression(temporaryPosition, 'P', symbol.position, '+')
+            generator.addNewExpression(temporaryPosition, 'P','+', symbol.position)
         generator.getStack(temporary,temporaryPosition)
         if (symbol.type!='boolean'):
             returnData= ReturnData(temporary,symbol.type,True)

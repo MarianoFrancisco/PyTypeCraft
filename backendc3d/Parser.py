@@ -356,53 +356,53 @@ def p_return(p):
     'return : RETURN expression'
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
-def add_natives(ast):
-    instructions=[]
-    #typeof
-    name = "typeof"
-    parameter=[{'type': 'any', 'id': 'typeof#parameter'}]
-    typeof=TypeOf(name,parameter,instructions,-1,-1)
-    ast.setFunctions(typeof)
-    #toString
-    name = "toString"
-    parameter=[{'type': 'any', 'id': 'tostring#parameter'}]
-    toString=ToString(name,parameter,instructions,-1,-1)
-    ast.setFunctions(toString)
-    #toLowerCase
-    name = "toLowerCase"
-    parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
-    toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
-    ast.setFunctions(toLowerCase)
-    #toUpperCase
-    name = "toUpperCase"
-    parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
-    toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
-    ast.setFunctions(toUpperCase)
-    #push
-    name = "push"
-    parameters=[{'type': 'any', 'id': 'push#parameter'},{'type':'NoType', 'id':'push#parameter2'}]
-    push=Push(name,parameters,instructions,-1,-1)
-    ast.setFunctions(push)
-    #split
-    name = "split"
-    parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
-    split=Split(name,parameters,instructions,-1,-1)
-    ast.setFunctions(split)
-    #toFixed
-    name = "toFixed"
-    parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
-    toFixed=ToFixed(name,parameters,instructions,-1,-1)
-    ast.setFunctions(toFixed)
-    #length
-    name = "length"
-    parameter=[{'type': 'string', 'id': 'length#parameter'}]
-    length=Length(name,parameter,instructions,-1,-1)
-    ast.setFunctions(length)
-    #toExponential
-    name = "toExponential"
-    parameters=[{'type': 'number', 'id': 'toexponential#parameter'},{'type':'number', 'id':'toexponential#parameter2'}]
-    toExponential=ToExponential(name,parameters,instructions,-1,-1)
-    ast.setFunctions(toExponential)
+# def add_natives(ast):
+#     instructions=[]
+#     #typeof
+#     name = "typeof"
+#     parameter=[{'type': 'any', 'id': 'typeof#parameter'}]
+#     typeof=TypeOf(name,parameter,instructions,-1,-1)
+#     ast.setFunctions(typeof)
+#     #toString
+#     name = "toString"
+#     parameter=[{'type': 'any', 'id': 'tostring#parameter'}]
+#     toString=ToString(name,parameter,instructions,-1,-1)
+#     ast.setFunctions(toString)
+#     #toLowerCase
+#     name = "toLowerCase"
+#     parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
+#     toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
+#     ast.setFunctions(toLowerCase)
+#     #toUpperCase
+#     name = "toUpperCase"
+#     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
+#     toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
+#     ast.setFunctions(toUpperCase)
+#     #push
+#     name = "push"
+#     parameters=[{'type': 'any', 'id': 'push#parameter'},{'type':'NoType', 'id':'push#parameter2'}]
+#     push=Push(name,parameters,instructions,-1,-1)
+#     ast.setFunctions(push)
+#     #split
+#     name = "split"
+#     parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
+#     split=Split(name,parameters,instructions,-1,-1)
+#     ast.setFunctions(split)
+#     #toFixed
+#     name = "toFixed"
+#     parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
+#     toFixed=ToFixed(name,parameters,instructions,-1,-1)
+#     ast.setFunctions(toFixed)
+#     #length
+#     name = "length"
+#     parameter=[{'type': 'string', 'id': 'length#parameter'}]
+#     length=Length(name,parameter,instructions,-1,-1)
+#     ast.setFunctions(length)
+#     #toExponential
+#     name = "toExponential"
+#     parameters=[{'type': 'number', 'id': 'toexponential#parameter'},{'type':'number', 'id':'toexponential#parameter2'}]
+#     toExponential=ToExponential(name,parameters,instructions,-1,-1)
+#     ast.setFunctions(toExponential)
 
 
 def p_error(t):
@@ -423,8 +423,10 @@ def parse(inp):
 
 
 entrada = '''
-let a:boolean=true
-console.log(!a)
+function suma(a:number,b:number){
+    return a+b;
+}
+console.log(suma(7,8)+suma(2,2));
 '''
 
 def test_lexer(lexer):
@@ -444,7 +446,7 @@ instructions = parse(entrada)
 ast = Tree_(instructions)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
-add_natives(ast)
+#add_natives(ast)
 
 for instruction in ast.getInstr():
     value = instruction.execute(ast,globalScope)

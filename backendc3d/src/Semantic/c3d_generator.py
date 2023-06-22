@@ -161,9 +161,10 @@ class C3DGenerator:
             self.onFunction=True
         self.whereAddCode(f'func {id}(){{\n','')
     def addEndFunction(self):
+        self.whereAddCode('return;\n}\n')
         if not self.onNative:
             self.onFunction=False
-        self.whereAddCode('\n}\n')
+        
 
     ''' Expressions '''
     def addNewExpression(self,temporary,left,operator,right):

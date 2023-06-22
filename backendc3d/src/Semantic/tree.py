@@ -2,7 +2,7 @@ class Tree_:
     
     def __init__(self, instructions):
         self.instructions = instructions
-        self.functions = []
+        self.functions = {}
         self.exceptions = []
         self.console = ""
         self.globalScope = None
@@ -25,13 +25,17 @@ class Tree_:
     def getFunctions(self):
         return self.functions
     
-    def setFunctions(self, functions):
-        self.functions.append(functions)
+    def setFunctions(self,id, functions):
+        if id in self.functions.keys():
+            return "error"
+        else:
+            self.functions[id] = functions
 
     def getFunction(self, id):
-        for function in self.functions:
-            if function.name == id:
-                return function
+        now = self
+        if now!=None:
+            if id in now.functions.keys():
+                return now.functions[id]
         return None
     
     def getExceptions(self):
