@@ -37,12 +37,12 @@ class ReturnData:
 
     def getLabelTrue(self):
         return self.labelTrue
-    def setTrueLbl(self, labelTrue):
+    def setLabelTrue(self, labelTrue):
         self.labelTrue = labelTrue
 
     def getLabelFalse(self):
         return self.labelFalse
-    def setFalseLbl(self, labelFalse):
+    def setLabelFalse(self, labelFalse):
         self.labelFalse = labelFalse
     
     

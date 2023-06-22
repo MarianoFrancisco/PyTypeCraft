@@ -423,9 +423,8 @@ def parse(inp):
 
 
 entrada = '''
-let a:string="adios";
-let b:string="hola";
-console.log(a!==b)
+let a:boolean=true
+console.log(!a)
 '''
 
 def test_lexer(lexer):

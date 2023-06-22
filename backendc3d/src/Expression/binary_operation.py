@@ -46,8 +46,7 @@ class ArithmeticOperation(Abstract):
             return ReturnData(temporary,self.type, True)
         else:
                 return CompilerException("Semantico", "Operacion no valida.", self.line, self.column)
-
-
+#class for relational operation
 class RelationalOperation(Abstract):
 
     def __init__(self, l_op, r_op, operator, line, column):
@@ -96,11 +95,6 @@ class RelationalOperation(Abstract):
                     self.comprobateLabel()#comprobate label
                     generator.addNewIf(temporary,self.getBinaryType(),"==",self.labelTrue)
                     generator.addGotoLabel(self.labelFalse)
-                    generator.addNewComment('End expression relational')
-                    generator.addNewLine()
-                    returnData.labelTrue=self.labelTrue
-                    returnData.labelFalse=self.labelFalse
-                    return returnData
         generator.addNewComment('End expression relational')
         generator.addNewLine()
         returnData.labelTrue=self.labelTrue
@@ -120,6 +114,7 @@ class RelationalOperation(Abstract):
             return '1'
         if self.operator == '!==':
             return '0'
+#class for logic operation
 class LogicOperation(Abstract):
 
     def __init__(self, l_op, r_op, operator, line, column):
@@ -133,5 +128,45 @@ class LogicOperation(Abstract):
         callGenerator=C3DGenerator()
         generator=callGenerator.getGenerator()
         generator.addNewComment('Start expression logic')
+        self.comprobateLabel()
+        labelAndOr = ''
+        if self.operator == '||':
+            self.l_op.setLabelTrue(self.labelTrue) 
+            self.r_op.setLabelTrue(self.labelTrue)
+            labelAndOr =  generator.addNewLabel()
+            self.l_op.setLabelFalse(labelAndOr)
+            self.r_op.setLabelFalse(self.labelFalse)
+        elif self.operator == '&&':
+            labelAndOr =  generator.addNewLabel()
+            self.l_op.setLabelTrue(labelAndOr) 
+            self.r_op.setLabelTrue(self.labelTrue)
+            self.l_op.labelFalse = self.r_op.labelFalse = self.labelFalse
+
+        left = self.l_op.execute(tree, table)
+        if isinstance(left, CompilerException): return left
+
+        if left.getType() != 'boolean':
+            return CompilerException("Semantico", "No se puede usar expresion boolean en: ", self.fila, self.colum)
+
+        generator.defineLabel(labelAndOr)
+        right = self.r_op.execute(tree, table)
+        if isinstance(right, CompilerException): return right
+
+        if right.getType() != 'boolean':
+            return CompilerException("Semantico", "No se puede utilizar la expresion booleana en: ", self.fila, self.colum)
         
-        
+        generator.addNewComment("End expression logic")
+        generator.addNewLine()
+
+        returnData = ReturnData(None, 'boolean', False)
+        returnData.setLabelTrue(self.labelTrue)
+        returnData.setLabelFalse(self.labelFalse)
+        return returnData
+    # Comprobate the label
+    def comprobateLabel(self):
+        callGenerator=C3DGenerator()
+        generator=callGenerator.getGenerator()
+        if self.labelTrue=='':
+            self.labelTrue=generator.addNewLabel()
+        if self.labelFalse=='':
+            self.labelFalse=generator.addNewLabel()

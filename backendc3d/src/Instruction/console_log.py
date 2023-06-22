@@ -11,7 +11,6 @@ class ConsoleLog(Abstract):
     def execute(self, tree, table):
         callGenerator=C3DGenerator()
         generator=callGenerator.getGenerator()
-        #value = self.params.execute(tree, table)
         for param in self.params:
             value = param.execute(tree, table)
             if isinstance(value,CompilerException):return value

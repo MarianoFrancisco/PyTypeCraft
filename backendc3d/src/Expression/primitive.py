@@ -25,9 +25,9 @@ class Primitive(Abstract):
             return ReturnData(temporary,self.type,True)#for heap true
         elif self.type == 'boolean':#create new label for true and false
             if self.labelTrue=='':
-                generator.addNewLabel()
+                self.labelTrue=generator.addNewLabel()
             if self.labelFalse=='':
-                generator.addNewLabel()
+                self.labelFalse=generator.addNewLabel()
             if self.value:#if value first true, else false first, but if not is the instruction execute the other gotolabel
                 generator.addGotoLabel(self.labelTrue)
                 generator.addGotoLabel(self.labelFalse)

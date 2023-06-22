@@ -46,7 +46,20 @@ class VariableDeclaration(Abstract):
         if not symbol.isGlobal:
             temporaryPosition=generator.addNewTemporary()
             generator.addNewExpression(temporaryPosition, 'P', symbol.position, '+')
-        generator.setStack(temporaryPosition,value.getValue())
+        if value.getType() == 'boolean':
+            temporaryLabel = generator.addNewLabel()
+            
+            generator.defineLabel(value.labelTrue)
+            generator.setStack(temporaryPosition, "1")
+            
+            generator.addGotoLabel(temporaryLabel)
+
+            generator.defineLabel(value.labelFalse)
+            generator.setStack(temporaryPosition, "0")
+
+            generator.defineLabel(temporaryLabel)
+        else:
+            generator.setStack(temporaryPosition,value.getValue())
         generator.addNewComment('End variable declaration')
         
     
