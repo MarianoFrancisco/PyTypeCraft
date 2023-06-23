@@ -30,3 +30,34 @@ class VariableAssignation(Abstract):
         if isinstance(result, CompilerException):
             return result
         return None
+    
+# DEFINIR BIEN LA ASIGNACION DE VARIABLES
+class VariableArrayAssignation(VariableAssignation):
+    def __init__(self, id, value, indexes, line, column):
+        super().__init__(id, value, line, column)
+        self.indexes = indexes
+
+    def execute(self, tree, table):
+        valueResult = self.value.execute(tree, table)
+        if isinstance(valueResult, CompilerException): return valueResult
+        symbol = table.getSymbolById(self.id)
+        if symbol == None:
+            return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
+        arr = symbol.value
+        # if not isinstance(symbol, ArraySymbol)
+        # componer el seteo, ya que se reemplaza todo el array
+        try:
+            target = arr
+            lastIndex = None
+            for index in self.indexes[:-1]:
+                lastIndex = index.execute(tree, table)
+                if isinstance(lastIndex, CompilerException): return lastIndex
+                target = target[lastIndex]
+            target[lastIndex] = valueResult
+
+            symbolUpdated = Symbol(self.id, symbol.type, target, self.line, self.column)
+            result = table.updateSymbol(symbolUpdated)
+            if isinstance(result, CompilerException): return result
+        except (IndexError, TypeError):
+            return CompilerException("Semantico", "Indice fuera de rango", self.line, self.column)
+        return None

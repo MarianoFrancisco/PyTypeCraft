@@ -15,9 +15,12 @@ class Array(Abstract):
         for value in self.expressions:
             result = value.execute(tree, table)
             if isinstance(result, CompilerException): return result
-            if self.type != None and self.type != value.type or isinstance(value, Array):
+            # if self.type != None and self.type != value.type or isinstance(value, Array):
+            if self.type != None and self.type != value.type:
                 self.type = 'any'
             else:
                 self.type = value.type
+            # if self.type != None and isinstance(value, Array):
+            #     self.type = f"{self.type}"
             arr.append(result)
         return arr

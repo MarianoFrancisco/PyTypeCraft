@@ -4,7 +4,7 @@ from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.reserved_continue import ReservedContinue
 from src.Expression.array import Array
 from src.Instruction.loop_while import While
-from src.Instruction.variable_assignation import VariableAssignation
+from src.Instruction.variable_assignation import VariableAssignation, VariableArrayAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
@@ -109,8 +109,29 @@ def p_type(p):
             | BOOLEAN
             | STRING
             | ANY
+            | NUMBER dimensions_array
+            | BOOLEAN dimensions_array
+            | STRING dimensions_array
+            | ANY dimensions_array
             '''
-    p[0]=p[1]
+    if p[2]:
+        p[0] = p[1]+p[2]
+    else:
+        p[0]=p[1]
+
+''' array dimension'''
+def p_dimensions_array(p):
+    'dimensions_array : dimensions_array dimension_array'
+    p[1] = p[1] + p[2]
+    p[0] = p[1]
+
+def p_dimensions_array_1(p):
+    'dimensions_array : dimension_array'
+    p[0] = p[1]
+
+def p_dimension_array(p):
+    'dimension_array : LBRACKET RBRACKET'
+    p[0] = '[]'
 
 ''' Concat '''
 
@@ -132,14 +153,18 @@ def p_assignment(p):
     p[0] = VariableAssignation(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
 # let a:String = "abc" let a:Number = [1,2,3]
 
+def p_assignment_array(p):
+    'assignment : ID indexes_array EQ expression'
+    p[0] = VariableArrayAssignation(p[1], p[4], p[2], p.lineno(1), find_column(input, p.slice[1]))
+
 ''' Declaration'''
 def p_declaration_assignment_type(p):
     'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
-def p_declaration_assignment_type_array(p):
-    'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
-    p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
+# def p_declaration_assignment_type_array(p):
+#     'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
+#     p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -267,21 +292,6 @@ def p_while(p):
     'while : WHILE LPAREN expression RPAREN LBRACE instructions RBRACE'
     p[0] = While(p[3], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
-''' array indexes'''
-def indexes_array(p):
-    'indexes_array : indexes_array index_array'
-    p[1].append(p[2])
-    p[0] = p[1]
-
-def indexes_array_1(p):
-    'indexes_array : index_array'
-    p[0] = [p[1]]
-
-def index_array(p):
-    'index_array : LBRACKET expression RBRACKET'
-    p[0] = p[2]
-
-
 # (3+2)*3
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
@@ -351,11 +361,25 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
-# # asdf1234
-# def p_expression_id_array(p):
-#     'expression : ID indexes_array'
-#     p[0] = IdentifierArray(p[1], p.lineno(1), find_column(input, p.slice[1]))
+# asdf1234
+def p_expression_id_array(p):
+    'expression : ID indexes_array'
+    p[0] = IdentifierArray(p[1], p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+
+''' array indexes'''
+def p_indexes_array(p):
+    'indexes_array : indexes_array index_array'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+def p_indexes_array_1(p):
+    'indexes_array : index_array'
+    p[0] = [p[1]]
+
+def p_index_array(p):
+    'index_array : LBRACKET expression RBRACKET'
+    p[0] = p[2]
 
 '''Increment and decrement'''
 # i++, i--
@@ -455,16 +479,15 @@ def parse(inp):
 
 
 entrada = '''
+let arr:number[][] = [
+[1,2,3],
+[4,5,6],
+[7,8,9]
+];
+arr[1][0] = 6666;
 
-for (let x of 'Hola mundo'){
-    console.log(x)
-}
+console.log(arr);
 
-
-console.log(h)
-console.log(concat(h,i))
-push(h,3)
-console.log(h)
 '''
 
 def test_lexer(lexer):

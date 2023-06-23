@@ -18,7 +18,7 @@ class Identifier(Abstract):
 
 # llamando valores que sean de un array a traves de sus indices PENDIENTE DE IMPLEMENTAR
 class IdentifierArray(Abstract):
-    def __init__(self, id, line, column, indexes, type=None):
+    def __init__(self, id, indexes, line, column, type=None):
         self.id = id
         self.line = line
         self.column = column
@@ -36,9 +36,9 @@ class IdentifierArray(Abstract):
         try:
             for index in self.indexes:
                 result = index.execute(tree, table)
-
+                if isinstance(result, CompilerException): return result
                 arr = arr[result]
         except (IndexError, TypeError):
-            return 'error'
+            return CompilerException("Semantico", f"Indice fuera de rango", self.line, self.column)
         else:
             return arr
