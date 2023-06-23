@@ -109,15 +109,16 @@ def p_type(p):
             | BOOLEAN
             | STRING
             | ANY
-            | NUMBER dimensions_array
+            '''
+    p[0]=p[1]
+
+def p_type_array(p):
+    '''type : NUMBER dimensions_array
             | BOOLEAN dimensions_array
             | STRING dimensions_array
             | ANY dimensions_array
             '''
-    if p[2]:
-        p[0] = p[1]+p[2]
-    else:
-        p[0]=p[1]
+    p[0] = p[1]+p[2]
 
 ''' array dimension'''
 def p_dimensions_array(p):
@@ -451,7 +452,7 @@ def add_natives(ast):
     ast.setFunctions(toFixed)
     #length
     name = "length"
-    parameter=[{'type': 'string', 'id': 'length#parameter'}]
+    parameter=[{'type': 'any', 'id': 'length#parameter'}]
     length=Length(name,parameter,instructions,-1,-1)
     ast.setFunctions(length)
     #toExponential
@@ -479,14 +480,10 @@ def parse(inp):
 
 
 entrada = '''
-let arr:number[][] = [
-[1,2,3],
-[4,5,6],
-[7,8,9]
-];
-arr[1][0] = 6666;
+let random = [1, 5, 8, -1, 21, 42, -55, 123, -5, 5, 11];
 
-console.log(arr);
+console.log("longitud", length(123))
+
 
 '''
 
