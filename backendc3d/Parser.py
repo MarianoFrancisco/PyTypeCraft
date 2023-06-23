@@ -420,13 +420,27 @@ def parse(inp):
     input = inp
     lexer.lineno = 1
     return parser.parse(inp)
-
+'''Usar para ver despues el entorno de las variables'''
+# let a:boolean=true
+# if(a===true){
+#     let a:boolean=false
+#     console.log(a)
+# }else{
+#     console.log("Es 3")
+# }
+# console.log(a)
 
 entrada = '''
-function suma(a:number,b:number){
-    return a+b;
+function ackerman(m: number, n: number) {
+    if (m === 0) {
+        return n + 1;
+    } else if (m > 0 && n === 0) {
+        return ackerman(m - 1, 1);
+    } else {
+        return ackerman(m - 1, ackerman(m, n - 1));
+    }
 }
-console.log(suma(7,8)+suma(2,2));
+console.log(ackerman(3,5))
 '''
 
 def test_lexer(lexer):

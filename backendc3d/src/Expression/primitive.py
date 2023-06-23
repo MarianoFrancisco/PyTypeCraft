@@ -5,9 +5,9 @@ from ..Semantic.c3d_generator import C3DGenerator
 class Primitive(Abstract):
 
     def __init__(self, value, type, line, column):
-        super().__init__(line, column)
         self.value = value
         self.type = type#typeAssistant
+        super().__init__(line, column)
 
     def execute(self, tree, table):
         callGenerator=C3DGenerator()

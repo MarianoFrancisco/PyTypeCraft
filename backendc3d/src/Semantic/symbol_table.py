@@ -54,7 +54,16 @@ class SymbolTable:
             self.size+=1# add new var, move stack
             self.table[id]=symbol
             return self.table[id]
-
+        
+    def searchSymbolById(self, id):  # Se obtiene el entorno
+        currentScope = self
+        while currentScope != None:
+            if id in currentScope.table:
+                return True
+            else:
+                currentScope = currentScope.prevScope
+        return False
+    
     def getSymbolById(self, id):  # Se obtiene el entorno
         currentScope = self
         while currentScope != None:

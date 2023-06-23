@@ -2,9 +2,9 @@ from ..Semantic.c3d_generator import C3DGenerator
 from ..Abstract.abstract import Abstract
 from ..Semantic.exception import CompilerException
 from ..Abstract.return_data import ReturnData
-from ..Semantic.symbol import Symbol
-from ..Semantic.symbol_table import SymbolTable
 from ..Instruction.reserved_return import ReservedReturn
+#from ..Semantic.symbol import Symbol
+#from ..Semantic.symbol_table import SymbolTable
 
 class CallFunction(Abstract):
 
@@ -25,11 +25,18 @@ class CallFunction(Abstract):
             temporaries = []#my temporaries
             size = table.size#size of the environment
             for parameter in self.parameters:
-                value = parameter.execute(tree, table)#execute
-                if isinstance(value, CompilerException):#if is exception only return
-                    return value
-                parametersValue.append(value)#add value
-                temporaries.append(value.getValue())#add temporaries
+                if isinstance(parameter,CallFunction):
+                    self.saveTemporaries(generator, table, temporaries)#call save my temporaries
+                    valueParemeter = parameter.execute(tree, table)#obtain value parameter
+                    if isinstance(valueParemeter, CompilerException): return valueParemeter
+                    parametersValue.append(valueParemeter)#add value parameter
+                    self.getTemporaries(generator, table, temporaries)#get my temporaries
+                else:
+                    value = parameter.execute(tree, table)#execute
+                    if isinstance(value, CompilerException):#if is exception only return
+                        return value
+                    parametersValue.append(value)#add value
+                    temporaries.append(value.getValue())#add temporaries
             temporary = generator.addNewTemporary()
             generator.addNewExpression(temporary,'P', '+',size+1)
             count = 0
@@ -72,6 +79,25 @@ class CallFunction(Abstract):
                 return returnData
         else:
             return CompilerException("Semantico", "No se encontro la funcion: " + str(self.name), str(self.line), str(self.column))
+        
+    def saveTemporaries(self, generator, table, temporaryParameter):
+        generator.addNewComment('Start save temporaries')
+        newTemporary = generator.addNewTemporary()#create new temporary
+        for temporary in temporaryParameter:#
+            generator.addNewExpression(newTemporary, 'P', '+', table.size)
+            generator.setStack(newTemporary, temporary)#Save in new temporary my data
+            table.size += 1#add 1
+        generator.addNewComment('End save temporaries')
+    
+    def getTemporaries(self, generator, table, temporaryParameter):
+        generator.addNewComment('Get save temporaries')
+        newTemporary = generator.addNewTemporary()#create new temporary
+        for temporary in temporaryParameter:#
+            table.size -= 1#minus 1
+            generator.addNewExpression(newTemporary, 'P', '+', table.size)
+            generator.getStack(temporary,newTemporary)#Get the data
+        generator.addNewComment('End get temporaries')
+
         # function = tree.getFunction(self.name)
         # if function == None:
         #     return CompilerException("Semantico", "No se encontro la funcion: " + str(self.name), str(self.line), str(self.column))

@@ -6,9 +6,8 @@ from ..Abstract.return_data import ReturnData
 class Identifier(Abstract):
     def __init__(self, id, line, column, type=None):
         self.id = id
-        self.line = line
-        self.column = column
         self.type = type
+        super().__init__(line, column)
 
     def execute(self, tree, table):
         callGenerator=C3DGenerator()

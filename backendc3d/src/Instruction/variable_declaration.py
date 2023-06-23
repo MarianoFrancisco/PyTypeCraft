@@ -45,7 +45,7 @@ class VariableDeclaration(Abstract):
         temporaryPosition=symbol.position
         if not symbol.isGlobal:
             temporaryPosition=generator.addNewTemporary()
-            generator.addNewExpression(temporaryPosition, 'P', symbol.position, '+')
+            generator.addNewExpression(temporaryPosition, 'P', '+', symbol.position)
         if value.getType() == 'boolean':
             temporaryLabel = generator.addNewLabel()
             

@@ -71,6 +71,10 @@ class RelationalOperation(Abstract):
                 return right
             if left.type =='number' and right.type=='number':#comparate type
                 self.comprobateLabel()# if exist label add, else create
+                if(self.operator=='==='):
+                    self.operator='=='
+                elif(self.operator=='!=='):
+                    self.operator='!='
                 generator.addNewIf(left.value,right.value,self.operator,self.labelTrue)
                 generator.addGotoLabel(self.getLabelFalse())
 
@@ -95,6 +99,33 @@ class RelationalOperation(Abstract):
                     self.comprobateLabel()#comprobate label
                     generator.addNewIf(temporary,self.getBinaryType(),"==",self.labelTrue)
                     generator.addGotoLabel(self.labelFalse)
+        else:
+            if(self.operator=='==='):
+                self.operator='=='
+            elif(self.operator=='!=='):
+                self.operator='!='
+            labelGotoRight = generator.addNewLabel()#label for go right
+            temporaryLeft  = generator.addNewTemporary()#temporary left
+            generator.defineLabel(left.getLabelTrue())#Define my label true L#:
+            generator.addNewExpression(temporaryLeft, '1', '','')#only temporary=1
+            generator.addGotoLabel(labelGotoRight)#LabelGotoRight
+            generator.defineLabel(left.getLabelFalse())#define my label for false L#:
+            generator.addNewExpression(temporaryLeft, '0', '','')#temporary left = 0
+            generator.defineLabel(labelGotoRight)#Define label L(LabelGotoRight):
+            right=self.r_op.execute(tree, table)#execute right
+            if right.type != 'boolean':
+                return CompilerException("Semantico","Datos a comparar no son del mismo tipo", self.line, self.column)
+            labelGotoEnd = generator.addNewLabel()#redirect to end
+            temporaryRight = generator.addNewTemporary()#temporary right
+            generator.defineLabel(right.getLabelTrue())#define label with the label true L(labelTrue):
+            generator.addNewExpression(temporaryRight, '1', '', '')#Temporary right=1
+            generator.addGotoLabel(labelGotoEnd)
+            generator.defineLabel(right.getLabelFalse())#define label with the label false L(labelFalse):
+            generator.addNewExpression(temporaryRight, '0', '', '')#temproaryRight=0
+            generator.defineLabel(labelGotoEnd)
+            self.comprobateLabel()
+            generator.addNewIf(temporaryLeft, temporaryRight, self.operator, self.getLabelTrue())#if temporaryLeft (operator) temporaryRight {goto: label true}
+            generator.addGotoLabel(self.labelFalse)#redirect false
         generator.addNewComment('End expression relational')
         generator.addNewLine()
         returnData.labelTrue=self.labelTrue
