@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Expression.struct_expression import StructExpression
 from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.reserved_continue import ReservedContinue
 from src.Expression.array import Array
@@ -79,6 +80,7 @@ def p_instruccion(p):
                     | assignment SEMI
                     | start_if SEMI
                     | function SEMI
+                    | struct SEMI
                     | call_function SEMI
                     | while SEMI
                     | for SEMI
@@ -93,6 +95,7 @@ def p_instruccion_out_semi(p):
                     | assignment
                     | start_if
                     | function
+                    | struct
                     | call_function
                     | while
                     | for
@@ -188,6 +191,11 @@ def p_declaration_notype(p):
     'declaration : LET ID'
     p[0] = VariableDeclaration(p[2], 'any', None, p.lineno(1), find_column(input, p.slice[1]))
 
+''' Struct '''
+# data_struct
+def p_struct(p):
+    'struct : INTERFACE ID LBRACE RBRACE'
+    # implementar logica para reconocer
 ''' Function'''
 #function a(){instructions}
 def p_function(p):
@@ -337,6 +345,27 @@ def p_expression_array(p):
     # CREAR EL ARRAY CON LOS DATOS QUE TRAE PARAMETER CALL
     p[0] = Array(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Struct Expression'''
+
+def p_expression_struct(p):
+    'expression : LBRACE struct_attributes RBRACE'
+    # CREAR EL STRUCT CON LOS DATOS QUE TRAE STRUCT ATTRIBUTES
+    p[0] = StructExpression(p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+''' Struct attributes'''
+def p_struct_attributes(p):
+    'struct_attributes : struct_attributes COMMA struct_attribute'
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_struct_attributes_1(p):
+    'struct_attributes : struct_attribute'
+    p[0] = [p[1]]
+
+def p_struct_attribute(p):
+    'struct_attribute : ID COLON expression'
+    p[0] = {"id": p[1], "value": p[3]}
+
 ''' Primivite '''
 # 1234
 def p_expression_number(p):
@@ -480,10 +509,13 @@ def parse(inp):
 
 
 entrada = '''
-let random = [1, 5, 8, -1, 21, 42, -55, 123, -5, 5, 11];
 
-console.log("longitud", length(123))
+let a = {
+    nombre: "hola",
+    edad: 15
 
+}
+console.log(a)
 
 '''
 
