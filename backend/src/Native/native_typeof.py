@@ -3,8 +3,7 @@ from ..Semantic.exception import CompilerException
 
 class TypeOf(Function):
     def __init__(self, name, parameters, instructions, line, column):
-        self.type="any"
-        super().__init__(name, parameters, instructions, line, column)  
+        super().__init__(name, parameters, instructions, line, column, 'string')  
     
     def execute(self, tree, table):
         var=table.getSymbolById("typeof#parameter")

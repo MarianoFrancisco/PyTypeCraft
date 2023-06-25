@@ -3,9 +3,8 @@ from ..Instruction.function import Function
 
 class ToFixed(Function):
 
-    def __init__(self, name, parameters, instructions, line, column):
-        self.type="number"
-        super().__init__(name, parameters, instructions, line, column)
+    def __init__(self, name, parameters, instructions, line, column):        
+        super().__init__(name, parameters, instructions, line, column, 'number')
     
     def execute(self, tree, table):
         var = table.getSymbolById("tofixed#parameter")
