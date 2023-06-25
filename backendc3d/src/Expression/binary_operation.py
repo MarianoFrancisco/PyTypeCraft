@@ -43,6 +43,19 @@ class ArithmeticOperation(Abstract):
             if left_value.type == 'string':
                 if op=='+':
                     self.type = 'string'
+                    generator.joinString()#use join stringn
+                    temporaryFirst = generator.addNewTemporary()#generate 2 temporary
+                    temporarySecond = generator.addNewTemporary()
+                    generator.addNewExpression(temporaryFirst, 'P','+',table.size)#tFirst=P+table.size
+                    generator.addNewExpression(temporaryFirst, temporaryFirst,'+', '1')#tFirst=tFirst+1, add 1
+                    generator.setStack(temporaryFirst, left_value.value)#set stack position tFirst,value left
+                    generator.addNewExpression(temporaryFirst,temporaryFirst,'+','1')#tFirst=tFirst+1
+                    generator.setStack(temporaryFirst, right_value.value)#set stack position tFirst, right value
+                    generator.newEnvironment(table.size)#new environment
+                    generator.callFunction('joinString')#call function
+                    generator.getStack(temporarySecond, 'P')#get the stack temporary second=stack[int(P)]
+                    generator.returnEnvironment(table.size)#return de environment
+                    return ReturnData(temporarySecond, self.type, False)
                 else:
                     generator.addNewComment('Error: se intenta operar string y no es suma')
             elif left_value.type == 'number':

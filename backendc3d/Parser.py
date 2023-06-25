@@ -10,6 +10,8 @@ from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
 from src.Instruction.loop_for import For,ForOf
 from src.Instruction.reserved_return import ReservedReturn
+from src.Instruction.reserved_continue import ReservedContinue
+from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
@@ -81,6 +83,8 @@ def p_instruccion(p):
                     | call_function SEMI
                     | while SEMI
                     | for SEMI
+                    | continue SEMI
+                    | break SEMI
                     | return SEMI''' 
     p[0] = p[1]
 
@@ -93,6 +97,8 @@ def p_instruccion_out_semi(p):
                     | call_function
                     | while
                     | for
+                    | continue
+                    | break
                     | return''' 
     p[0] = p[1]
 
@@ -370,6 +376,16 @@ def p_return(p):
     'return : RETURN expression'
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Continue '''
+def p_continue(p):
+    'continue : CONTINUE'
+    p[0] = ReservedContinue(p.lineno(1), find_column(input, p.slice[1]))
+
+''' Break '''
+def p_break(p):
+    'break : BREAK'
+    p[0] = ReservedBreak(p.lineno(1), find_column(input, p.slice[1]))
+
 def add_natives(ast):
     instructions=[]
 #     #typeof
@@ -446,6 +462,70 @@ def parse(inp):
 
 entrada = '''
 
+console.log("");
+console.log("=======================================================================");
+console.log("=================================WHILE=================================");
+console.log("=======================================================================");
+
+let index: number;
+index = 0;
+while (index >= 0){
+    if (index === 0) {
+        index = index + 100;
+    }else if (index > 50){
+        index = index / 2 - 25;
+    }else{
+        index = (index / 2) - 1;
+    };
+
+    console.log(index);
+};
+
+console.log("");
+console.log("=======================================================================");
+console.log("================================WHILE-2================================");
+console.log("=======================================================================");
+
+index= -2;
+index = index + 1;
+
+while (index !== 12) {
+    index = index + 1;
+    
+    if (index === 0 || index === 1 || index === 11 || index === 12) {
+        console.log("*********************************************************************************************************");
+    }else if (index === 2) {
+        console.log("**********  ***************  ******                 ******                 ******              **********");
+    }else if (index >= 3 && index <= 5) {
+        console.log("**********  ***************  ******  *********************  *************  ******  **********************");
+    }else if (index === 6) {
+        console.log("**********  ***************  ******                 ******                 ******  **********************");
+    } else if (index >= 7 && index <= 9) {
+        console.log("**********  ***************  ********************   ******  *************  ******  **********************");
+    } else if (index === 10) {
+        console.log("**********                   ******                 ******  *************  ******              **********");
+    };
+};
+
+console.log("");
+console.log("=======================================================================");
+console.log("=============================TRANSFERENCIA=============================");
+console.log("=======================================================================");
+
+let a:number = -1;
+while (a < 5){
+    a = a + 1;
+    if (a === 3){
+        console.log("a");
+        continue;
+    } else if (a === 4){
+        console.log("b");
+        break;
+    };
+    console.log("El valor de a es: ", a, ", ");
+};
+
+console.log("Se debió imprimir");
 
 console.log("");
 console.log("=======================================================================");
@@ -455,17 +535,18 @@ console.log("===================================================================
 for (let i=0; i<=9; i++){
     let output = "";
     for (let j =0; j<10; j++){
-        output = "+";
-        console.log(output);
+        output = output + " ";
     };
 
     for (let k =0; k<10; k++ ){
-        output ="*";
-        console.log(output);
+        output = output + "* ";
     };
-    console.log(i);
+
+
+    console.log(output);
 
 };
+
 '''
 
 def test_lexer(lexer):

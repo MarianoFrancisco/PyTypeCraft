@@ -12,6 +12,7 @@ class C3DGenerator:
         self.imports=[]
         #natives
         self.consoleLogString=False#Only in string, array or char
+        self.plusString=False
         self.contrastToString=False
         self.nativeToUpperCase=False
         self.nativeToLowerCase=False
@@ -38,6 +39,7 @@ class C3DGenerator:
         self.imports=[]
         #natives
         self.consoleLogString=False
+        self.plusString=False
         self.contrastToString=False
         self.nativeToUpperCase=False
         self.nativeToLowerCase=False
@@ -194,6 +196,7 @@ class C3DGenerator:
             self.whereAddCode(f'fmt.Printf("%{type}", int({value}));\n')
             
     ''' Natives '''
+    #print string
     def consoleString(self):
         self.setImport('fmt')
         if(self.consoleLogString):#True only return
@@ -223,6 +226,66 @@ class C3DGenerator:
         self.addEndFunction()
         self.onNative=False
     
+    #join string, string+string
+    def joinString(self):
+        if self.plusString:
+            return
+        self.plusString = True
+        self.onNative = True
+        self.addStartFunction('joinString')#start the function to join
+        labelReturn = self.addNewLabel()#Create labelReturn
+        labelFirst = self.addNewLabel()#Create labelFirst,labelSecond,labelThird
+        labelSecond = self.addNewLabel()
+        labelThird = self.addNewLabel()
+        temporaryFirst = self.addNewTemporary()#add temporaryFirst,Second,Third, Fouth and Five
+        temporarySecond = self.addNewTemporary()
+        temporaryThird = self.addNewTemporary()
+        temporaryFourth = self.addNewTemporary()
+        temporaryFive = self.addNewTemporary()
+        self.addNewExpression(temporaryFirst, 'H',"","")#add new expression, temporaryFirst=H
+        self.addNewExpression(temporarySecond,'P','+','1')#temporarySecond=P+1
+        self.getStack(temporaryFourth, temporarySecond)#temporaryFourth=stack[int(temporarySecond)]
+        self.addNewExpression(temporaryThird, 'P', '+', '2')#temporaryThird=P+2
+        self.defineLabel(labelFirst)#lFirst:
+        self.addSpaceIdent()#espace
+        self.getHeap(temporaryFive, temporaryFourth)#temporaryFive=heap[int(temporaryFourth)]
+        self.addSpaceIdent()#espace
+        self.addNewIf(temporaryFive, '-1','==', labelSecond)#if temporary ==-1 goto{labelSecond},  -1=end
+        self.addSpaceIdent()#espace
+        self.setHeap('H', temporaryFive)#heap[int(H)]=temporaryFive
+        self.addSpaceIdent()#espace
+        self.addNewExpression('H', 'H','+','1')#add one H, H=H+1
+        self.addSpaceIdent()#espace
+        self.addNewExpression(temporaryFourth,temporaryFourth, '+','1')#tFourth=tFourth+1, add 1
+        self.addSpaceIdent()#espace
+        self.addGotoLabel(labelFirst)#goto{labelFirst}
+        self.defineLabel(labelSecond)#lSecond:
+        self.addSpaceIdent()#espace
+        self.getStack(temporaryFourth,temporaryThird)#tFourth=stack[int(tThird)]
+        self.defineLabel(labelThird)#lThird:
+        self.addSpaceIdent()#espace
+        self.getHeap(temporaryFive, temporaryFourth)#tFive=heap[int(tFourth)]
+        self.addSpaceIdent()#espace
+        self.addNewIf(temporaryFive, '-1','==', labelReturn)#if tFive==-1, goto{labelReturn}, -1=end
+        self.addSpaceIdent()#espace
+        self.setHeap('H', temporaryFive)#heap[int(H)]=tFive
+        self.addSpaceIdent()#espace
+        self.addNewExpression('H','H','+','1')#add 1 to H, H=H+1
+        self.addSpaceIdent()#espace
+        self.addNewExpression(temporaryFourth,temporaryFourth,'+','1')#tFourth=tFourth+1, add +1
+        self.addSpaceIdent()#espace
+        self.addGotoLabel(labelThird)#goto{labelThird}
+        self.defineLabel(labelReturn)#lReturn:
+        self.addSpaceIdent()#espace
+        self.setHeap('H', '-1')#heap[int(H)]=-1, end
+        self.addSpaceIdent()#espace
+        self.addNewExpression('H', 'H','+','1')#add 1 in H, H=H+1
+        self.addSpaceIdent()#espace
+        self.setStack('P', temporaryFirst)#set stack, stack[int(P)]=tFirst
+        self.addEndFunction()#end function
+        self.onNative = False#Reset onNative
+
+    #compareString
     def contrastString(self):
         if self.contrastToString:
             return
