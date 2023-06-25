@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Expression.null import Null
 from src.Expression.struct_expression import StructExpression
 from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.reserved_continue import ReservedContinue
@@ -123,6 +124,12 @@ def p_type_array(p):
             '''
     p[0] = p[1]+p[2]
 
+# type_function
+def p_type_function(p):
+    '''type_function : type
+                     | VOID'''
+    p[0]=p[1]
+
 ''' array dimension'''
 def p_dimensions_array(p):
     'dimensions_array : dimensions_array dimension_array'
@@ -206,6 +213,13 @@ def p_function_parameter(p):
     'function : FUNCTION ID LPAREN parameters RPAREN LBRACE instructions RBRACE'
     p[0]=Function(p[2], p[4], p[7], p.lineno(1), find_column(input, p.slice[1]))
 
+def p_function_type(p):
+    'function : FUNCTION ID LPAREN RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]= Function(p[2],[],p[8], p.lineno(1), find_column(input, p.slice[1]), p[6])
+#function a(x){instructions}
+def p_function_parameter_type(p):
+    'function : FUNCTION ID LPAREN parameters RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]=Function(p[2], p[4], p[9], p.lineno(1), find_column(input, p.slice[1]), p[7])
 ''' Call function '''
 
 # a(x)
@@ -391,6 +405,11 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
+# NULL
+def p_expression_null(p):
+    'expression : NULL'
+    p[0] = Null(p.lineno(1), find_column(input, p.slice[1]))
+
 # asdf1234
 def p_expression_id_array(p):
     'expression : ID indexes_array'
@@ -510,12 +529,41 @@ def parse(inp):
 
 entrada = '''
 
-let a = {
-    nombre: "hola",
-    edad: 15
+console.log("=======================================================================");
+console.log("==========================FUNCIONES Y RETURN===========================");
+console.log("=======================================================================");
 
+function potenciaNativa(base: number, exponente: number): number {
+    let resultado: number = base;
+    while (exponente > 1) {
+        resultado = resultado * base;
+        exponente = exponente - 1;
+    }
+    return resultado;
 }
-console.log(a)
+
+console.log(potenciaNativa(5, 7));
+console.log(potenciaNativa(2, 2));
+console.log(potenciaNativa(4, 2));
+
+function sumarTodo(num1: number, num2: number): number {
+    let result: number = 0;
+    if (num1 < 0 || num2 < 0) {
+        return -1;
+    }
+
+    while (num1 > 0 || num2 > 0) {
+        result = result + (num1 + num2);
+        num1 = num1 - 1;
+        num2 = num2 - 1;
+    }
+    return result;
+}
+
+console.log(sumarTodo(5, 4));
+console.log(sumarTodo(-1, -5));
+console.log(sumarTodo(7, 7));
+
 
 '''
 

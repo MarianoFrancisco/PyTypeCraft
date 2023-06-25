@@ -5,11 +5,11 @@ from ..Semantic.symbol_table import SymbolTable
 
 class Function(Abstract):
 
-    def __init__(self, name, parameters, instructions, line,column):
+    def __init__(self, name, parameters, instructions, line, column, type='any'):
         self.name = name
         self.parameters = parameters
         self.instructions = instructions
-        self.type = 'number'
+        self.type = type
         super().__init__(line,column)
     
 

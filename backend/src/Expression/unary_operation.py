@@ -33,10 +33,6 @@ class ArithmeticUnaryOperation(Abstract):
             if isinstance(result, CompilerException): return result
             return expressionValue-1
 
-
-        
-        
-
 class BooleanUnaryOperation(Abstract):
     def __init__(self, expression, operator, line, column):
         super().__init__(line, column)
