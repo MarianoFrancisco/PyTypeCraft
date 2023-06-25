@@ -1,3 +1,5 @@
+from ..Instruction.reserved_break import ReservedBreak
+from ..Instruction.reserved_continue import ReservedContinue
 from ..Instruction.reserved_return import ReservedReturn
 from ..Semantic.symbol_table import SymbolTable
 from ..Semantic.exception import CompilerException
@@ -31,13 +33,13 @@ class While(Abstract):
                         tree.setExceptions(value)
                         return value
 
-                    # if isinstance(value, Break):
-                    #     return None
+                    if isinstance(value, ReservedBreak):
+                        return None
 
                     if isinstance(value, ReservedReturn):
                         return value
 
-                    # if isinstance(value, Continue):
-                    #     break
+                    if isinstance(value, ReservedContinue):
+                        break
             else:
                 break
