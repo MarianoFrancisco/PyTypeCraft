@@ -461,91 +461,36 @@ def parse(inp):
 # console.log(a)
 
 entrada = '''
+function ackerman(m: number, n: number): number {
+    if (m === 0) {
+        return n + 1;
+    } else if (m > 0 && n === 0) {
+        return ackerman(m - 1, 1);
+    } else {
+        return ackerman(m - 1, ackerman(m, n - 1));
+    }
+}
 
-console.log("");
-console.log("=======================================================================");
-console.log("=================================WHILE=================================");
-console.log("=======================================================================");
+function hanoi(discos: number, origen: number, auxiliar: number, destino: number){
+    if (discos === 1) {
+    console.log("Mover de", origen, "a", destino);
+    } else {
+    hanoi(discos - 1, origen, destino, auxiliar);
+    console.log("Mover de", origen, "a", destino);
+    hanoi(discos - 1, auxiliar, origen, destino);
+    }
+}
 
-let index: number;
-index = 0;
-while (index >= 0){
-    if (index === 0) {
-        index = index + 100;
-    }else if (index > 50){
-        index = index / 2 - 25;
-    }else{
-        index = (index / 2) - 1;
-    };
-
-    console.log(index);
-};
-
-console.log("");
-console.log("=======================================================================");
-console.log("================================WHILE-2================================");
-console.log("=======================================================================");
-
-index= -2;
-index = index + 1;
-
-while (index !== 12) {
-    index = index + 1;
-    
-    if (index === 0 || index === 1 || index === 11 || index === 12) {
-        console.log("*********************************************************************************************************");
-    }else if (index === 2) {
-        console.log("**********  ***************  ******                 ******                 ******              **********");
-    }else if (index >= 3 && index <= 5) {
-        console.log("**********  ***************  ******  *********************  *************  ******  **********************");
-    }else if (index === 6) {
-        console.log("**********  ***************  ******                 ******                 ******  **********************");
-    } else if (index >= 7 && index <= 9) {
-        console.log("**********  ***************  ********************   ******  *************  ******  **********************");
-    } else if (index === 10) {
-        console.log("**********                   ******                 ******  *************  ******              **********");
-    };
-};
-
-console.log("");
-console.log("=======================================================================");
-console.log("=============================TRANSFERENCIA=============================");
-console.log("=======================================================================");
-
-let a:number = -1;
-while (a < 5){
-    a = a + 1;
-    if (a === 3){
-        console.log("a");
-        continue;
-    } else if (a === 4){
-        console.log("b");
-        break;
-    };
-    console.log("El valor de a es: ", a, ", ");
-};
-
-console.log("Se debió imprimir");
-
-console.log("");
-console.log("=======================================================================");
-console.log("==================================FOR==================================");
-console.log("=======================================================================");
-
-for (let i=0; i<=9; i++){
-    let output = "";
-    for (let j =0; j<10; j++){
-        output = output + " ";
-    };
-
-    for (let k =0; k<10; k++ ){
-        output = output + "* ";
-    };
-
-
-    console.log(output);
-
-};
+function factorial(num: number): number {
+    if (num === 1) {
+        return 1;
+    } else {
+        return num * factorial(num - 1);
+    }
+}
+console.log(factorial(5));
+console.log(ackerman(3, 5));
+hanoi(3, 1, 2, 3);
 
 '''
 

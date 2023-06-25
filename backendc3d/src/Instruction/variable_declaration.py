@@ -34,10 +34,9 @@ class VariableDeclaration(Abstract):
         # Verificacion de types
         if hasattr(self.value, 'id') and isinstance(self.value, Identifier):
             value = table.getSymbolById(self.value.id)
-            dataType=value.type
         else:
             value = self.value.execute(tree, table)
-            dataType=self.value.type
+        dataType=value.type
         if isinstance(value, CompilerException): return value 
         if 'Array' in self.type and not isinstance(self.value, Array):
             return CompilerException("Semantico", f"La expresion {value} no puede asignarse a '{self.id}', ya que no es un arreglo", self.line, self.column)

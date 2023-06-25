@@ -3,6 +3,8 @@ from ..Semantic.exception import CompilerException
 from ..Semantic.symbol_table import SymbolTable
 from ..Abstract.abstract import Abstract
 from ..Instruction.reserved_return import ReservedReturn
+from ..Instruction.reserved_continue import ReservedContinue
+from ..Instruction.reserved_break import ReservedBreak
 
 class IfSentence(Abstract):
 
@@ -31,15 +33,24 @@ class IfSentence(Abstract):
                 valueInstruction = instruction.execute(tree, entorn)#execute de instruction
                 if isinstance(valueInstruction, CompilerException):
                     tree.setExceptions(valueInstruction)
-                # if isinstance(valueInstruction, Break):
-                #     if table.labelBreak != '':
-                #         generator.addGotoLabel(table.labelBreak)
-                #     else:
-                #         leave = generator.addNewLabel()
-                #         generator.addGotoLabel(leave)
-                #         generator.defineLabel(valueInstruction.getLabel())
-                #         generator.defineLabel(leave)
-                #         return CompilerException("Semantico", "Error: Break fuera de la instancia", self.fila, self.columna)
+                if isinstance(valueInstruction, ReservedBreak):
+                    if table.labelBreak != '':
+                        generator.addGotoLabel(table.labelBreak)#goto{table.labelBreak}
+                    else:
+                        leave = generator.addNewLabel()#add new label (leave)
+                        generator.addGotoLabel(leave)#goto{leave(the new label)}
+                        generator.defineLabel(valueInstruction.getLabel())#L(valueInstruction.label):
+                        generator.defineLabel(leave)#Lleave:
+                        return CompilerException("Semantico", "Error: Break fuera de la instancia", self.line, self.column)
+                if isinstance(valueInstruction, ReservedContinue):
+                    if table.labelContinue != '':
+                        generator.addGotoLabel(table.labelContinue)#goto{table.labelContinue}
+                    else:
+                        gotoContinue = generator.addNewLabel()#add new label (gotocontinue)
+                        generator.addGotoLabel(gotoContinue)#goto{gotoContinue}
+                        generator.defineLabel(condition.getLabelFalse())#label condition.labelFalse
+                        generator.defineLabel(gotoContinue)#gotoContinue:
+                        return CompilerException("Semantico", "Error: Continue fuera de la instancia", self.line, self.colum)
                 if isinstance(valueInstruction, ReservedReturn):#if is instance ofreturn
                     if entorn.labelReturn != '':
                         generator.addNewComment('Return data for the function')

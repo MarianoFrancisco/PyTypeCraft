@@ -73,7 +73,7 @@ class CallFunction(Abstract):
                 generator.addNewIf(temporary,1,'==',self.labelTrue)
                 generator.addGotoLabel(self.labelFalse)
                 #Reserver return have the label true & false
-                returnData = ReservedReturn(temporary, function.getType(), True)
+                returnData = ReturnData(temporary, function.getType(), True)
                 returnData.labelTrue = self.labelTrue
                 returnData.labelFalse = self.labelFalse
                 generator.addNewComment('End recover boolean')
