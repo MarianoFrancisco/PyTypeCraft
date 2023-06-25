@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.struct import Struct
 from src.Expression.null import Null
 from src.Expression.struct_expression import StructExpression
 from src.Instruction.reserved_break import ReservedBreak
@@ -201,8 +202,20 @@ def p_declaration_notype(p):
 ''' Struct '''
 # data_struct
 def p_struct(p):
-    'struct : INTERFACE ID LBRACE RBRACE'
+    'struct : INTERFACE ID LBRACE multidata_struct RBRACE'
     # implementar logica para reconocer
+    p[0] = Struct(p[2], p[4], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_multidata_struct(p):
+    '''multidata_struct : multidata_struct parameter SEMI
+                        | multidata_struct parameter'''
+    p[1].append(p[2])
+    p[0] = p[1]
+def p_multidata_struct_1(p):
+    '''multidata_struct : parameter SEMI
+                        | parameter'''
+    p[0] = [p[1]]
+
 ''' Function'''
 #function a(){instructions}
 def p_function(p):
@@ -528,41 +541,22 @@ def parse(inp):
 
 
 entrada = '''
-
-console.log("=======================================================================");
-console.log("==========================FUNCIONES Y RETURN===========================");
-console.log("=======================================================================");
-
-function potenciaNativa(base: number, exponente: number): number {
-    let resultado: number = base;
-    while (exponente > 1) {
-        resultado = resultado * base;
-        exponente = exponente - 1;
-    }
-    return resultado;
+interface Actor {
+    nombre: string
+    edad: number
 }
 
-console.log(potenciaNativa(5, 7));
-console.log(potenciaNativa(2, 2));
-console.log(potenciaNativa(4, 2));
-
-function sumarTodo(num1: number, num2: number): number {
-    let result: number = 0;
-    if (num1 < 0 || num2 < 0) {
-        return -1;
-    }
-
-    while (num1 > 0 || num2 > 0) {
-        result = result + (num1 + num2);
-        num1 = num1 - 1;
-        num2 = num2 - 1;
-    }
-    return result;
+interface Pelicula {
+    nombre: string
+    posicion: number;
 }
 
-console.log(sumarTodo(5, 4));
-console.log(sumarTodo(-1, -5));
-console.log(sumarTodo(7, 7));
+interface Pelicula {
+    nombre: string;
+    posicion: number
+}
+
+console.log('hola')
 
 
 '''
