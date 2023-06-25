@@ -2,9 +2,8 @@ from ..Instruction.function import Function
 from ..Semantic.exception import CompilerException
 
 class ToUpperCase(Function):
-    def __init__(self, name, parameters, instructions, line, column):
-        self.type="string"
-        super().__init__(name, parameters, instructions, line, column)  
+    def __init__(self, name, parameters, instructions, line, column,type):
+        super().__init__(name, parameters, instructions, line, column,type) 
     
     def execute(self, tree, table):
         return

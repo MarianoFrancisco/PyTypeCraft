@@ -52,7 +52,8 @@ class CallFunction(Abstract):
                         return CompilerException("Semantico", f"Tipos distintos a los solicitados en los parametros {self.name}", self.line, self.column)
 
             generator.newEnvironment(size)
-            self.getFunction(function,generator) #Call function native
+            #self.getFunction(function,generator) #Call function native
+            self.getFunction(generator) #Call function native
             generator.callFunction(function.name)
             generator.getStack(temporary,'P')#obtain stack
             generator.returnEnvironment(size)#return the environment
@@ -98,13 +99,19 @@ class CallFunction(Abstract):
             generator.getStack(temporary,newTemporary)#Get the data
         generator.addNewComment('End get temporaries')
 
-    def getFunction(self,function,generator):
+    # def getFunction(self,function,generator):
+    #     if self.name == 'toUpperCase':
+    #         generator.upperCase()
+    #         function.setType('string')
+    #     elif self.name == 'toLowerCase':
+    #         generator.lowerCase()
+    #         function.setType('string')
+    #     return
+    def getFunction(self,generator):
         if self.name == 'toUpperCase':
             generator.upperCase()
-            function.setType('string')
         elif self.name == 'toLowerCase':
             generator.lowerCase()
-            function.setType('string')
         return
         # function = tree.getFunction(self.name)
         # if function == None:

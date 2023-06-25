@@ -107,6 +107,12 @@ def p_type(p):
             '''
     p[0]=p[1]
 
+# type_function
+def p_type_function(p):
+    '''type_function : type
+                     | VOID'''
+    p[0]=p[1]
+
 ''' Concat '''
 
 def p_concat(p):
@@ -166,6 +172,15 @@ def p_function(p):
 def p_function_parameter(p):
     'function : FUNCTION ID LPAREN parameters RPAREN LBRACE instructions RBRACE'
     p[0]=Function(p[2], p[4], p[7], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_function_type(p):
+    'function : FUNCTION ID LPAREN RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]= Function(p[2],[],p[8], p.lineno(1), find_column(input, p.slice[1]), p[6])
+#function a(x){instructions}
+def p_function_parameter_type(p):
+    'function : FUNCTION ID LPAREN parameters RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]=Function(p[2], p[4], p[9], p.lineno(1), find_column(input, p.slice[1]), p[7])
+
 
 ''' Call function '''
 
@@ -371,12 +386,12 @@ def add_natives(ast):
     #toLowerCase
     name = "toLowerCase"
     parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
-    toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
+    toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1,'string')
     ast.setFunctions('toLowerCase',toLowerCase)
     #toUpperCase
     name = "toUpperCase"
     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
-    toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
+    toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1,'string')
     ast.setFunctions('toUpperCase',toUpperCase)
 #     #push
 #     name = "push"
@@ -431,25 +446,36 @@ def parse(inp):
 # console.log(a)
 
 entrada = '''
-console.log("");
-console.log("=======================================================================");
-console.log("=================================WHILE=================================");
-console.log("=======================================================================");
+function ackerman(m: number, n: number): number {
+    if (m === 0) {
+        return n + 1;
+    } else if (m > 0 && n === 0) {
+        return ackerman(m - 1, 1);
+    } else {
+        return ackerman(m - 1, ackerman(m, n - 1));
+    }
+}
 
-let index: number;
-index = 0;
-while (index >= 0) {
-    if (index === 0){
-        index = index + 100;
-    }else if (index > 50){
-        index = index / 2 - 25;
-    }else{
-        index = (index / 2) - 1;
-    };
+function hanoi(discos: number, origen: number, auxiliar: number, destino: number){
+    if (discos === 1) {
+    console.log("Mover de", origen, "a", destino);
+    } else {
+    hanoi(discos - 1, origen, destino, auxiliar);
+    console.log("Mover de", origen, "a", destino);
+    hanoi(discos - 1, auxiliar, origen, destino);
+    }
+}
 
-    console.log(index);
-};
-
+function factorial(num: number): number {
+    if (num === 1) {
+        return 1;
+    } else {
+        return num * factorial(num - 1);
+    }
+}
+console.log(factorial(5));
+console.log(ackerman(3, 5));
+hanoi(3, 1, 2, 3);
 '''
 
 def test_lexer(lexer):

@@ -7,11 +7,11 @@ from ..Semantic.c3d_generator import C3DGenerator
 
 class Function(Abstract):
 
-    def __init__(self, name, parameters, instructions, line,column):
+    def __init__(self, name, parameters, instructions, line,column,type='any'):
         self.name = name
         self.parameters = parameters
         self.instructions = instructions
-        self.type = 'number'
+        self.type = type
         self.retainTemporary=True#To go at other environment
         super().__init__(line,column)
     
@@ -73,6 +73,6 @@ class Function(Abstract):
 
     def getType(self):
         return self.type
-    '''setters'''
-    def setType(self,type):
-        self.type=type
+    # '''setters'''
+    # def setType(self,type):
+    #     self.type=type
