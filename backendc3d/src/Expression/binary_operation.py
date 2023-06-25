@@ -22,7 +22,7 @@ class ArithmeticOperation(Abstract):
         left_value = self.l_op.execute(tree, table)
         
         if isinstance(left_value, CompilerException):
-            return left_value.value
+            return left_value
         # if self.l_op.type != 'number' or self.r_op.type != 'number':
         #     return CompilerException('Semantico', 'Los valores a operar no son numericos', self.line, self.column)
         # op=self.operator

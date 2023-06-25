@@ -3,6 +3,8 @@ from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
 from ..Semantic.c3d_generator import C3DGenerator
+from ..Expression.identifier import Identifier
+from ..Semantic.symbol import Symbol
 
 class VariableDeclaration(Abstract):
 
@@ -31,11 +33,17 @@ class VariableDeclaration(Abstract):
         value = self.value.execute(tree, table)
         if isinstance(value, CompilerException): return value 
         # Verificacion de types
+        if hasattr(self.value, 'id') and isinstance(self.value, Identifier):
+            value = table.getSymbolById(self.value.id)
+            dataType=value.type
+        else:
+            value = self.value.execute(tree, table)
+            dataType=self.value.type
         if 'Array' in self.type and not isinstance(self.value, Array):
             return CompilerException("Semantico", f"La expresion {value} no puede asignarse a '{self.id}', ya que no es un arreglo", self.line, self.column)
         if self.type != 'any' and not ('Array' in self.type) and isinstance(self.value, Array):
             return CompilerException("Semantico", f"La variable '{self.id}' no se le puede asignar un arreglo", self.line, self.column)
-        if 'any' in str(self.type) or str(self.value.type) in str(self.type):
+        if 'any' in str(self.type) or str(dataType) in str(self.type):
             inHeap=value.getType()=='string' or value.getType()=='interface'
             symbol = table.setTable(self.id,value.type,inHeap,self.search)
         else:
@@ -59,7 +67,12 @@ class VariableDeclaration(Abstract):
 
             generator.defineLabel(temporaryLabel)
         else:
-            generator.setStack(temporaryPosition,value.getValue())
+            if isinstance(value, Symbol):
+                temporary=generator.addNewTemporary()#create new temporary
+                generator.getStack(temporary,value.position)
+                generator.setStack(symbol.position,temporary)
+            else:
+                generator.setStack(temporaryPosition,value.getValue())
         generator.addNewComment('End variable declaration')
         
     

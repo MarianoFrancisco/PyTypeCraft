@@ -47,7 +47,7 @@ class Function(Abstract):
         for instruction in self.instructions:
             valueInstruction= instruction.execute(tree, entorn)#view instructions
             if isinstance(valueInstruction, CompilerException):
-                tree.setExcepctions(valueInstruction)
+                tree.setExceptions(valueInstruction)
             if isinstance(valueInstruction, ReservedReturn):
                 generator.addNewComment('Start data into function')
                 if valueInstruction.getLabelTrue() == '':
