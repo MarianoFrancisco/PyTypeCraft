@@ -8,7 +8,7 @@ from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnar
 from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
-from src.Instruction.loo_for import For
+from src.Instruction.loop_for import For
 from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
@@ -356,7 +356,7 @@ def p_return(p):
     'return : RETURN expression'
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
-# def add_natives(ast):
+def add_natives(ast):
 #     instructions=[]
 #     #typeof
 #     name = "typeof"
@@ -368,16 +368,16 @@ def p_return(p):
 #     parameter=[{'type': 'any', 'id': 'tostring#parameter'}]
 #     toString=ToString(name,parameter,instructions,-1,-1)
 #     ast.setFunctions(toString)
-#     #toLowerCase
-#     name = "toLowerCase"
-#     parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
-#     toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
-#     ast.setFunctions(toLowerCase)
-#     #toUpperCase
-#     name = "toUpperCase"
-#     parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
-#     toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
-#     ast.setFunctions(toUpperCase)
+    #toLowerCase
+    name = "toLowerCase"
+    parameter=[{'type': 'string', 'id': 'tolowercase#parameter'}]
+    toLowerCase=ToLowerCase(name,parameter,instructions,-1,-1)
+    ast.setFunctions('toLowerCase',toLowerCase)
+    #toUpperCase
+    name = "toUpperCase"
+    parameter=[{'type': 'string', 'id': 'touppercase#parameter'}]
+    toUpperCase=ToUpperCase(name,parameter,instructions,-1,-1)
+    ast.setFunctions('toUpperCase',toUpperCase)
 #     #push
 #     name = "push"
 #     parameters=[{'type': 'any', 'id': 'push#parameter'},{'type':'NoType', 'id':'push#parameter2'}]
@@ -388,11 +388,11 @@ def p_return(p):
 #     parameters=[{'type': 'string', 'id': 'split#parameter'},{'type':'string', 'id':'split#parameter2'}]
 #     split=Split(name,parameters,instructions,-1,-1)
 #     ast.setFunctions(split)
-#     #toFixed
-#     name = "toFixed"
-#     parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
-#     toFixed=ToFixed(name,parameters,instructions,-1,-1)
-#     ast.setFunctions(toFixed)
+    # #toFixed
+    # name = "toFixed"
+    # parameters=[{'type': 'number', 'id': 'tofixed#parameter'},{'type':'number', 'id':'tofixed#parameter2'}]
+    # toFixed=ToFixed(name,parameters,instructions,-1,-1)
+    # ast.setFunctions(toFixed)
 #     #length
 #     name = "length"
 #     parameter=[{'type': 'string', 'id': 'length#parameter'}]
@@ -431,16 +431,25 @@ def parse(inp):
 # console.log(a)
 
 entrada = '''
-function ackerman(m: number, n: number) {
-    if (m === 0) {
-        return n + 1;
-    } else if (m > 0 && n === 0) {
-        return ackerman(m - 1, 1);
-    } else {
-        return ackerman(m - 1, ackerman(m, n - 1));
-    }
-}
-console.log(ackerman(3,5))
+console.log("");
+console.log("=======================================================================");
+console.log("=================================WHILE=================================");
+console.log("=======================================================================");
+
+let index: number;
+index = 0;
+while (index >= 0) {
+    if (index === 0){
+        index = index + 100;
+    }else if (index > 50){
+        index = index / 2 - 25;
+    }else{
+        index = (index / 2) - 1;
+    };
+
+    console.log(index);
+};
+
 '''
 
 def test_lexer(lexer):
@@ -460,7 +469,7 @@ instructions = parse(entrada)
 ast = Tree_(instructions)
 globalScope = SymbolTable()
 ast.setGlobalScope(globalScope)
-#add_natives(ast)
+add_natives(ast)
 
 for instruction in ast.getInstr():
     value = instruction.execute(ast,globalScope)

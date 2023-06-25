@@ -2,6 +2,7 @@ from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
 from ..Abstract.return_data import ReturnData
 from ..Semantic.c3d_generator import C3DGenerator
+from ..Instruction.call_function import CallFunction
 
 class ArithmeticOperation(Abstract):
     # en el nivel mas bajo se espera que se reciban privitivo + primitivo
@@ -19,16 +20,22 @@ class ArithmeticOperation(Abstract):
         generator.addNewComment('Start expression aritmetic')
         temporary=''
         left_value = self.l_op.execute(tree, table)
-        right_value = self.r_op.execute(tree, table)
+        
         if isinstance(left_value, CompilerException):
             return left_value.value
-        if isinstance(right_value, CompilerException):
-            return right_value.value
-        if left_value.type != right_value.type:
-            return CompilerException('Semantico', 'Los valores a operar no coinciden', self.line, self.column)
         # if self.l_op.type != 'number' or self.r_op.type != 'number':
         #     return CompilerException('Semantico', 'Los valores a operar no son numericos', self.line, self.column)
         # op=self.operator
+        if isinstance(self.r_op, CallFunction):
+                self.r_op.saveTemporaries(generator, table, [left_value.value])
+                right_value = self.r_op.execute(tree, table)
+                self.r_op.getTemporaries(generator, table, [left_value.value])
+        else:
+            right_value = self.r_op.execute(tree, table)
+        if left_value.type != right_value.type:
+            return CompilerException('Semantico', 'Los valores a operar no coinciden', self.line, self.column)
+        if isinstance(right_value, CompilerException):
+            return right_value.value
         op=self.operator
         if(op=='+' or op=='-' or op=='*' or op=='/' or op=='%' or op=='^'):
             temporary=generator.addNewTemporary()

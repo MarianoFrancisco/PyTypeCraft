@@ -22,7 +22,7 @@ class For(Abstract):
         if table.searchSymbolById(self.requirement.id):#search for the first declaration
             flag = False#search if exist id
 
-
+        
         # nuevaTabla = TablaSimbolos(tabla)  # NUEVO ENTORNO
 
         # inicio = self.inicio.interpretar(arbol, nuevaTabla)

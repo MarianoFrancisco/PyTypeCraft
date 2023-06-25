@@ -73,3 +73,6 @@ class Function(Abstract):
 
     def getType(self):
         return self.type
+    '''setters'''
+    def setType(self,type):
+        self.type=type

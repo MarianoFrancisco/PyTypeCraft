@@ -13,6 +13,8 @@ class C3DGenerator:
         #natives
         self.consoleLogString=False#Only in string, array or char
         self.contrastToString=False
+        self.nativeToUpperCase=False
+        self.nativeToLowerCase=False
         # Verify if we're on function or native
         self.functions=''
         self.natives=''
@@ -37,6 +39,8 @@ class C3DGenerator:
         #natives
         self.consoleLogString=False
         self.contrastToString=False
+        self.nativeToUpperCase=False
+        self.nativeToLowerCase=False
         # Verify if we're on function or native
         self.functions=''
         self.natives=''
@@ -170,6 +174,8 @@ class C3DGenerator:
     def addNewExpression(self,temporary,left,operator,right):
         if(operator=='^'):
             self.whereAddCode(f'{temporary} = math.Pow({left},{right});\n')
+        elif(operator=='%'):
+            self.whereAddCode(f'{temporary} = math.Mod({left},{right});\n')
         elif(operator=='==='):
             self.whereAddCode(f'{temporary} = {left} == {right};\n')
         elif(operator=='!=='):
@@ -273,4 +279,78 @@ class C3DGenerator:
         self.defineLabel(returnLabel)#goto return label
         self.addEndFunction()
         self.onNative = False
-
+    #native upperCase
+    def upperCase(self):
+        if self.nativeToUpperCase:
+            return
+        self.nativeToUpperCase = True
+        self.onNative = True 
+        self.addStartFunction('toUpperCase')#Start with the function
+        #Add new temporaries
+        temporary = self.addNewTemporary()
+        temporarySecond = self.addNewTemporary()
+        temporaryThird = self.addNewTemporary()
+        #Add labels
+        label = self.addNewLabel()
+        labelSecond = self.addNewLabel()
+        labelThird = self.addNewLabel()
+        #Create new assignament
+        self.addNewAssignament(temporary, 'H')
+        self.addNewExpression(temporarySecond, 'P','+', '1')#add the expression tSecond=P+1
+        self.getStack(temporarySecond, temporarySecond)#temporary=stack[int(temporary)]
+        self.defineLabel(label)#L:
+        self.getHeap(temporaryThird, temporarySecond)#tThird=heap[int(tSecond)]
+        #Compare to, only letters minus are in 97 and 122 ascii others no matter
+        self.addNewIf(temporaryThird, '-1', '==', labelThird)#tThird==-1 lThird
+        self.addNewIf(temporaryThird, '97', '<', labelSecond)#tThird<91 lSecond
+        self.addNewIf(temporaryThird, '122', '>', labelSecond)#tThird>122 lSecond
+        self.addNewExpression(temporaryThird, temporaryThird, '-', '32')#data minus 32 for change lower at upper
+        self.defineLabel(labelSecond)#define labelSecond
+        self.setHeap('H', temporaryThird)#set heap to temporaryThird
+        self.nextHeap()#next
+        self.addNewExpression(temporarySecond, temporarySecond, '+', '1')#tSecond=tSecond+1
+        self.addGotoLabel(label)#Goto l
+        self.defineLabel(labelThird)#lThird
+        self.setHeap('H', '-1')#set heap to -1 (end)
+        self.nextHeap()#next heap
+        self.setStack('P', temporary)#set the stack with temporary
+        self.addEndFunction()
+        self.onNative = False
+    #Native lowerCase
+    def lowerCase(self):
+        if self.nativeToLowerCase:
+            return
+        self.nativeToLowerCase = True
+        self.onNative = True 
+        self.addStartFunction('toLowerCase')#Start with the function
+        #Add new temporaries
+        temporary = self.addNewTemporary()
+        temporarySecond = self.addNewTemporary()
+        temporaryThird = self.addNewTemporary()
+        #Add labels
+        label = self.addNewLabel()
+        labelSecond = self.addNewLabel()
+        labelThird = self.addNewLabel()
+        #Create new assignament
+        self.addNewAssignament(temporary, 'H')
+        self.addNewExpression(temporarySecond, 'P','+', '1')#add the expression tSecond=P+1
+        self.getStack(temporarySecond, temporarySecond)#temporary=stack[int(temporary)]
+        self.defineLabel(label)#L:
+        self.getHeap(temporaryThird, temporarySecond)#tThird=heap[int(tSecond)]
+        #Compare to, only letters minus are in 97 and 122 ascii others no matter
+        self.addNewIf(temporaryThird, '-1', '==', labelThird)#tThird==-1 lThird
+        self.addNewIf(temporaryThird, '65', '<', labelSecond)#tThird<65 lSecond
+        self.addNewIf(temporaryThird, '90', '>', labelSecond)#tThird>90 lSecond
+        self.addNewExpression(temporaryThird, temporaryThird, '+', '32')#data plus 32 for change upper at lower
+        self.defineLabel(labelSecond)#define labelSecond
+        self.setHeap('H', temporaryThird)#set heap to temporaryThird
+        self.nextHeap()#next
+        self.addNewExpression(temporarySecond, temporarySecond, '+', '1')#tSecond=tSecond+1
+        self.addGotoLabel(label)#Goto l
+        self.defineLabel(labelThird)#lThird
+        self.setHeap('H', '-1')#set heap to -1 (end)
+        self.nextHeap()#next heap
+        self.setStack('P', temporary)#set the stack with temporary
+        self.addEndFunction()
+        self.onNative = False
+    #typeOf

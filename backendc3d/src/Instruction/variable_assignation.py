@@ -17,7 +17,8 @@ class VariableAssignation(Abstract):
         generator=callGenerator.getGenerator()
         generator.addNewComment('Modify variable')
         symbol = table.getSymbolById(self.id)
-        if isinstance(self.value.expression, Identifier):
+
+        if hasattr(self.value, 'expression') and isinstance(self.value.expression, Identifier):
             valueResult=table.getSymbolById(self.value.expression.id)
         else:
             valueResult=self.value.execute(tree, table)
