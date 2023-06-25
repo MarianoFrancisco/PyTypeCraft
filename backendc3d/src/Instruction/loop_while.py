@@ -18,6 +18,7 @@ class While(Abstract):
         callGenerator=C3DGenerator()
         generator=callGenerator.getGenerator()
         generator.addNewComment("Start loop while")
+        entorn = SymbolTable(table)#New entorn
         operator = self.condition.operator
         while True:
             #Verify if is operator correct
@@ -32,7 +33,6 @@ class While(Abstract):
                 table.labelBreak = condition.getLabelFalse()
                 table.labelContinue = labelFirst
                 for instruction in self.instructions:
-                    entorn = SymbolTable(table)  #New entorn
                     entorn.labelBreak = table.labelBreak#exit of all else
                     entorn.labelContinue = table.labelContinue#continue with the else
                     entorn.labelReturn = table.labelReturn#return data

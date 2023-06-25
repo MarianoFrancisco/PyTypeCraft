@@ -26,8 +26,12 @@ class VariableAssignation(Abstract):
             generator.addNewComment('Error: End modify variable, variable no encontrada')
             return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
         if isinstance(symbol, CompilerException): return symbol
-        if not isinstance(symbol, AnySymbol) and self.value.type != symbol.type:
-            return CompilerException('Semantico', f'El valor {valueResult} no coincide con el tipo {symbol.type} de la variable {self.id}', self.line, self.column)
+        if isinstance(self.value,Identifier):
+            if not isinstance(symbol, AnySymbol) and valueResult.type != symbol.type:
+                return CompilerException('Semantico', f'El valor {valueResult} no coincide con el tipo {symbol.type} de la variable {self.id}', self.line, self.column)
+        else:
+            if not isinstance(symbol, AnySymbol) and self.value.type != symbol.type:
+                return CompilerException('Semantico', f'El valor {valueResult} no coincide con el tipo {symbol.type} de la variable {self.id}', self.line, self.column)
         if isinstance(symbol, ArraySymbol) and not isinstance(self.value, Array):
             return CompilerException("Semantico", f"La expresion {valueResult} no puede asignarse a '{self.id}', ya que no es un arreglo", self.line, self.column)
         if not isinstance(symbol, AnySymbol) and not isinstance(symbol, ArraySymbol) and isinstance(self.value, Array):

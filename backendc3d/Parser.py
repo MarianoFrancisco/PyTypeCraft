@@ -8,7 +8,7 @@ from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnar
 from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
 from src.Instruction.function import Function
-from src.Instruction.loop_for import For
+from src.Instruction.loop_for import For,ForOf
 from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
@@ -269,7 +269,7 @@ def p_for(p):
 # for (let i of id){instructions}
 def p_for_of(p):
     'for : FOR LPAREN declaration OF expression RPAREN LBRACE instructions RBRACE'
-    p[0]
+    p[0] = ForOf(p[3], p[5], p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' Loop while'''
 # While(true){instructions}
@@ -354,8 +354,7 @@ def p_expression_id(p):
 def p_expression_dec_inc(p):
     '''expression : expression DBPLUS
                 | expression DBMINUS
-                '''
-    print('reconociendo incremento, decremento')
+                ''' 
     p[0] = ArithmeticUnaryOperation(p[1], p[2], p.lineno(2), find_column(input, p.slice[2]))
 
 
@@ -372,7 +371,7 @@ def p_return(p):
     p[0] = ReservedReturn(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
 def add_natives(ast):
-#     instructions=[]
+    instructions=[]
 #     #typeof
 #     name = "typeof"
 #     parameter=[{'type': 'any', 'id': 'typeof#parameter'}]
@@ -446,18 +445,27 @@ def parse(inp):
 # console.log(a)
 
 entrada = '''
-let a:number=3;
-function cambiar(){
-if(a===3){
-a=4;
-}else{
-a=5;
-}
-}
-cambiar()
-console.log(a)
 
 
+console.log("");
+console.log("=======================================================================");
+console.log("==================================FOR==================================");
+console.log("=======================================================================");
+
+for (let i=0; i<=9; i++){
+    let output = "";
+    for (let j =0; j<10; j++){
+        output = "+";
+        console.log(output);
+    };
+
+    for (let k =0; k<10; k++ ){
+        output ="*";
+        console.log(output);
+    };
+    console.log(i);
+
+};
 '''
 
 def test_lexer(lexer):
