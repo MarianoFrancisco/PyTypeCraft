@@ -1,7 +1,7 @@
 from ..Semantic.exception import CompilerException
 from ..Semantic.symbol import Symbol
-from ..Semantic.symbol import Symbol, ArraySymbol, AnySymbol
-from ..Expression.array import Array
+#from ..Semantic.symbol import Symbol, ArraySymbol, AnySymbol
+#from ..Expression.array import Array
 
 class SymbolTable:
 

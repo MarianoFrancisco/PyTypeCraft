@@ -3,6 +3,7 @@ from ..Abstract.abstract import Abstract
 from ..Abstract.return_data import ReturnData
 from ..Semantic.c3d_generator import C3DGenerator
 from ..Instruction.call_function import CallFunction
+from typing import List
 
 class ArithmeticOperation(Abstract):
     # en el nivel mas bajo se espera que se reciban privitivo + primitivo
@@ -23,20 +24,32 @@ class ArithmeticOperation(Abstract):
         
         if isinstance(left_value, CompilerException):
             return left_value
-        # if self.l_op.type != 'number' or self.r_op.type != 'number':
-        #     return CompilerException('Semantico', 'Los valores a operar no son numericos', self.line, self.column)
-        # op=self.operator
+        if isinstance(left_value.type,List):
+                if('number' in left_value.type):
+                    left_value.type='number'
+                elif('string' in left_value.type):
+                    left_value.type='string'
+                elif('boolean' in left_value.type):
+                    left_value.type='boolean'
         if isinstance(self.r_op, CallFunction):
                 self.r_op.saveTemporaries(generator, table, [left_value.value])
                 right_value = self.r_op.execute(tree, table)
                 self.r_op.getTemporaries(generator, table, [left_value.value])
         else:
             right_value = self.r_op.execute(tree, table)
+        if isinstance(right_value.type,List):
+                if('number' in right_value.type):
+                    right_value.type='number'
+                elif('string' in right_value.type):
+                    right_value.type='string'
+                elif('boolean' in right_value.type):
+                    right_value.type='boolean'
         if left_value.type != right_value.type:
             return CompilerException('Semantico', 'Los valores a operar no coinciden', self.line, self.column)
         if isinstance(right_value, CompilerException):
             return right_value.value
         op=self.operator
+        
         if(op=='+' or op=='-' or op=='*' or op=='/' or op=='%' or op=='^'):
             temporary=generator.addNewTemporary()
             generator.addNewExpression(temporary,left_value.value,op,right_value.value)
@@ -83,12 +96,26 @@ class RelationalOperation(Abstract):
         left = self.l_op.execute(tree, table)
         if isinstance(left, CompilerException):
             return left
+        if isinstance(left.type,List):
+                if('number' in left.type):
+                    left.type='number'
+                elif('string' in left.type):
+                    left.type='string'
+                elif('boolean' in left.type):
+                    left.type='boolean'
         right = None
         returnData=ReturnData(None,'boolean',False)
         if (left.type!='boolean'):
             right=self.r_op.execute(tree, table)
             if isinstance(right, CompilerException):
                 return right
+            if isinstance(right.type,List):
+                if('number' in right.type):
+                    right.type='number'
+                elif('string' in right.type):
+                    right.type='string'
+                elif('boolean' in right.type):
+                    right.type='boolean'
             if left.type =='number' and right.type=='number':#comparate type
                 self.comprobateLabel()# if exist label add, else create
                 if(self.operator=='==='):
@@ -133,6 +160,9 @@ class RelationalOperation(Abstract):
             generator.addNewExpression(temporaryLeft, '0', '','')#temporary left = 0
             generator.defineLabel(labelGotoRight)#Define label L(LabelGotoRight):
             right=self.r_op.execute(tree, table)#execute right
+            if isinstance(right.type,List):
+                if('boolean' in right.type):
+                    right.type='boolean'
             if right.type != 'boolean':
                 return CompilerException("Semantico","Datos a comparar no son del mismo tipo", self.line, self.column)
             labelGotoEnd = generator.addNewLabel()#redirect to end
@@ -195,14 +225,26 @@ class LogicOperation(Abstract):
 
         left = self.l_op.execute(tree, table)
         if isinstance(left, CompilerException): return left
-
+        if isinstance(left.type,List):
+                if('number' in left.type):
+                    left.type='number'
+                elif('string' in left.type):
+                    left.type='string'
+                elif('boolean' in left.type):
+                    left.type='boolean'
         if left.getType() != 'boolean':
             return CompilerException("Semantico", "No se puede usar expresion boolean en: ", self.fila, self.colum)
 
         generator.defineLabel(labelAndOr)
         right = self.r_op.execute(tree, table)
         if isinstance(right, CompilerException): return right
-
+        if isinstance(right.type,List):
+                if('number' in right.type):
+                    right.type='number'
+                elif('string' in right.type):
+                    right.type='string'
+                elif('boolean' in right.type):
+                    right.type='boolean'
         if right.getType() != 'boolean':
             return CompilerException("Semantico", "No se puede utilizar la expresion booleana en: ", self.fila, self.colum)
         

@@ -1,9 +1,8 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
-from src.Expression.array import Array
 from src.Instruction.loop_while import While
 from src.Instruction.variable_assignation import VariableAssignation
-from src.Instruction.variable_declaration import VariableDeclaration
+from src.Instruction.variable_declaration import VariableDeclaration, ArrayDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
 from src.Instruction.call_function import CallFunction
@@ -15,17 +14,17 @@ from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
-from src.Expression.identifier import Identifier
-from src.Native.native_typeof import TypeOf
-from src.Native.native_tostring import ToString
+from src.Expression.identifier import Identifier,Array
+# from src.Native.native_typeof import TypeOf
+# from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
 from src.Native.native_touppercase import ToUpperCase
-from src.Native.native_push import Push
+# from src.Native.native_push import Push
 from src.Instruction.concat import Concat
-from src.Native.native_split import Split
-from src.Native.native_tofixed import ToFixed
-from src.Native.native_length import Length
-from src.Native.native_toexponential import ToExponential
+# from src.Native.native_split import Split
+# from src.Native.native_tofixed import ToFixed
+# from src.Native.native_length import Length
+# from src.Native.native_toexponential import ToExponential
 from src.Semantic.tree import Tree_
 from src.Semantic.c3d_generator import C3DGenerator
 from src.Expression.primitive import Primitive
@@ -77,6 +76,7 @@ def p_instruction_only(p):
 def p_instruccion(p):
     '''instruction : print SEMI
                     | declaration SEMI
+                    | declaration_array SEMI
                     | assignment SEMI
                     | start_if SEMI
                     | function SEMI
@@ -91,6 +91,7 @@ def p_instruccion(p):
 def p_instruccion_out_semi(p):
     '''instruction : print
                     | declaration
+                    | declaration_array
                     | assignment
                     | start_if
                     | function
@@ -143,19 +144,14 @@ def p_assignment(p):
 def p_declaration_assignment_type(p):
     'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
-
-def p_declaration_assignment_type_array(p):
-    'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
-    p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
-
-# def p_assignment_arrays(p):
-#     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
-#     p[0]
+#array, let id(2):type(4)=[parameter(7)]
+def p_declaration_array(p):
+    'declaration_array : LET ID COLON type EQ LBRACKET parameters_call RBRACKET'
+    p[0] = ArrayDeclaration(p[2], p.lineno(1), find_column(input, p.slice[1]), p[7], p[4])
 
 def p_declaration_assignment_notype(p):
     'declaration : LET ID EQ expression'
     p[0] = VariableDeclaration(p[2], 'any', p[4], p.lineno(1), find_column(input, p.slice[1]))
-
 
 # let a:String let
 
@@ -324,10 +320,31 @@ def p_expression_unaria(p):
 
 ''' Array Expression'''
 
+#list of parameters array
+def p_parameters_array_list(p):
+    'parameters_array : parameters_array LBRACKET parameter_array RBRACKET'
+    p[1].append(p[3])
+    p[0] = p[1]
+
+#one paramters array
+def p_parameters_array_one(p):
+    'parameters_array : LBRACKET parameter_array RBRACKET'
+    p[0] = [p[2]]
+
+#parameter array
+def p_parameter_array(p):
+    'parameter_array : expression'
+    p[0] = p[1]
+
+#call array with his parameters
+def p_call_array(p):
+    'expression : ID parameters_array'
+    p[0] = Array(p[1], p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+#expression array with paramaters_call
 def p_expression_array(p):
     'expression : LBRACKET parameters_call RBRACKET'
-    # CREAR EL ARRAY CON LOS DATOS QUE TRAE PARAMETER CALL
-    p[0] = Array(p[2], p.lineno(1), find_column(input, p.slice[1]))
+    p[0] = ArrayDeclaration('', p.lineno(1), find_column(input, p.slice[1]),p[2])
 
 ''' Primivite '''
 # 1234
@@ -353,7 +370,6 @@ def p_expression_boolean_false(p):
 def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
-
 
 '''Increment and decrement'''
 # i++, i--
@@ -450,48 +466,12 @@ def parse(inp):
     input = inp
     lexer.lineno = 1
     return parser.parse(inp)
-'''Usar para ver despues el entorno de las variables'''
-# let a:boolean=true
-# if(a===true){
-#     let a:boolean=false
-#     console.log(a)
-# }else{
-#     console.log("Es 3")
-# }
-# console.log(a)
 
 entrada = '''
-function ackerman(m: number, n: number): number {
-    if (m === 0) {
-        return n + 1;
-    } else if (m > 0 && n === 0) {
-        return ackerman(m - 1, 1);
-    } else {
-        return ackerman(m - 1, ackerman(m, n - 1));
-    }
-}
-
-function hanoi(discos: number, origen: number, auxiliar: number, destino: number){
-    if (discos === 1) {
-    console.log("Mover de", origen, "a", destino);
-    } else {
-    hanoi(discos - 1, origen, destino, auxiliar);
-    console.log("Mover de", origen, "a", destino);
-    hanoi(discos - 1, auxiliar, origen, destino);
-    }
-}
-
-function factorial(num: number): number {
-    if (num === 1) {
-        return 1;
-    } else {
-        return num * factorial(num - 1);
-    }
-}
-console.log(factorial(5));
-console.log(ackerman(3, 5));
-hanoi(3, 1, 2, 3);
-
+let nombre:string =["H","O","L","A"];
+for(let i:number=0;i<=3;i++){
+    console.log(nombre[i])
+};
 '''
 
 def test_lexer(lexer):

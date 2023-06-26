@@ -16,6 +16,7 @@ class C3DGenerator:
         self.contrastToString=False
         self.nativeToUpperCase=False
         self.nativeToLowerCase=False
+        self.arrayIndexError=False
         # Verify if we're on function or native
         self.functions=''
         self.natives=''
@@ -43,6 +44,7 @@ class C3DGenerator:
         self.contrastToString=False
         self.nativeToUpperCase=False
         self.nativeToLowerCase=False
+        self.arrayIndexError=False
         # Verify if we're on function or native
         self.functions=''
         self.natives=''
@@ -417,3 +419,16 @@ class C3DGenerator:
         self.addEndFunction()
         self.onNative = False
     #typeOf
+    #index error
+    def indexError(self):
+        if self.arrayIndexError:
+            return
+        self.arrayIndexError = True
+        self.onNative = True
+        self.addStartFunction('arrarIndexError')
+        arrayError = "Index out range\n"
+        for char in arrayError:#print array error
+            self.addConsoleLog("c",ord(char))
+        self.addEndFunction()
+        self.addNewLine()
+        self.onNative = False

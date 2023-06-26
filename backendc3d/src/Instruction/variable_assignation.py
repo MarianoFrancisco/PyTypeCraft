@@ -1,9 +1,8 @@
 from ..Semantic.c3d_generator import C3DGenerator
-from ..Expression.array import Array
 from ..Semantic.symbol import Symbol, AnySymbol, ArraySymbol
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
-from ..Expression.identifier import Identifier
+from ..Expression.identifier import Identifier,Array
 #from ..Expression.unary_operation import ArithmeticUnaryOperation
 
 class VariableAssignation(Abstract):

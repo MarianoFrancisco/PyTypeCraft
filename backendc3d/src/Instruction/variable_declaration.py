@@ -1,10 +1,11 @@
-from ..Expression.array import Array
+from ..Semantic.c3d_generator import C3DGenerator
 from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
-from ..Semantic.c3d_generator import C3DGenerator
-from ..Expression.identifier import Identifier
+from ..Expression.identifier import Identifier,Array
 from ..Semantic.symbol import Symbol
+from ..Abstract.return_data import ReturnData
+from typing import List
 
 class VariableDeclaration(Abstract):
 
@@ -74,4 +75,123 @@ class VariableDeclaration(Abstract):
                 generator.setStack(temporaryPosition,value.getValue())
         generator.addNewComment('End variable declaration')
         
+class ArrayDeclaration(Abstract):
+
+    def __init__(self,id, line, column, values = None, typeAssistant = None):
+        self.id = id
+        self.values = values
+        self.typeAssistant = typeAssistant
+        self.type = 'array'
+        self.size = len(values)
+        self.manyDimension = False
+        self.onStruct = False
+        super().__init__(line, column)
+
+    def execute(self, tree, table):
+        #generator
+        callGenerator=C3DGenerator()
+        generator=callGenerator.getGenerator()
+        if self.values:
+            if isinstance(self.typeAssistant, List):#type assistant are list
+                #manyDimension
+                if self.type == self.typeAssistant[0]:
+                    generator.addNewComment('Start array '+self.id)
+                    #Add first & second temporary
+                    temporaryFirst = generator.addNewTemporary()
+                    temporarySecond = generator.addNewTemporary()
+                    generator.addNewAssignament(temporaryFirst,'H')#new assignament, tFirst=H
+                    generator.addNewExpression(temporarySecond,temporaryFirst,'+','1')#tSecond=tFirst+1
+                    generator.setHeap('H', len(self.values))#heap[int(H)]=len(values)
+                    pointer = str(len(self.values)+1)#pointer=values +1
+                    generator.addNewExpression('H','H','+',pointer)#H=H+pointer
+                    generator.addNewLine()
+                    size = 0
+                    #save data
+                    for value in self.values:
+                        if not isinstance(value, ArrayDeclaration):#not instans of array declaration
+                            resultValue = value.execute(tree, table)#execute value
+                            if isinstance(resultValue, CompilerException): return resultValue
+                            try:#if error or not
+                                if resultValue.getType() == self.typeAssistant[1]:#if result value type == type assistant
+                                    generator.setHeap(temporarySecond,resultValue.getValue())#heap[int(temporarySecond)]=value of result value
+                                    generator.addNewExpression(temporarySecond,temporarySecond,'+','1')#tSecond=tSecond+1
+                                    generator.addNewLine()
+                                    size += 1
+                                else:
+                                    return CompilerException("Semantico", "En el array se encuentran tipos distintos", self.line, self.column)
+                            except:
+                                generator.addNewComment('Error en array')
+                    symbol = table.setTable(self.id,self.type,True)#set table
+                    symbol.setTypeAssistant(self.typeAssistant[1])#edit data
+                    symbol.setSize(size)
+                    temporaryPosition=symbol.position#temporary position
+                    if not symbol.isGlobal:
+                        temporaryPosition=generator.addNewTemporary()
+                        generator.addNewExpression(temporaryPosition, 'P','+', symbol.position)
+                    generator.setStack(temporaryPosition,temporaryFirst)#stack[int(temporaryPosition)]=tFirst
+                    generator.addNewComment('End array')
+            else:#one dimension
+                generator.addNewComment('Start array '+self.id)
+                #Add first & second temporary
+                temporaryFirst = generator.addNewTemporary()
+                temporarySecond = generator.addNewTemporary()
+                generator.addNewAssignament(temporaryFirst,'H')#new assignament, tFirst=H
+                generator.addNewExpression(temporarySecond,temporaryFirst,'+','1')#tSecond=tFirst+1
+                generator.setHeap('H', len(self.values))#heap[int(H)]=len(values)
+                pointer = str(len(self.values)+1)#pointer=values +1
+                generator.addNewExpression('H','H','+',pointer)#H=H+pointer
+                generator.addNewLine()
+                size = 0
+                typeAssistant = []#list typeAssistant
+                typeAssistant.append('array')#add array
+                type = ''
+                for value in self.values:
+                    if not isinstance(value, ArrayDeclaration):#not instans of array declaration
+                        resultValue = value.execute(tree, table)#execute value
+                        if isinstance(resultValue, CompilerException): return resultValue
+                        type = resultValue.getType()
+                        generator.setHeap(temporarySecond,resultValue.getValue())#heap[int(temporarySecond)]=value of result value
+                        generator.addNewExpression(temporarySecond,temporarySecond,'+','1')#tSecond=tSecond+1
+                        generator.addNewLine()
+                        size += 1
+                    else:
+                        value.manyDimension = True
+                        value.typeAssistant = value.getType()#typeAssistant=value.type
+                        resultValue = value.execute(tree, table)#execute value
+                        if isinstance(resultValue, CompilerException): return resultValue
+                        typeAssistant.append(resultValue.getTypeAssistant())
+                        generator.setHeap(temporarySecond,resultValue.getValue())#heap[int(temporarySecond)]=value of result value
+                        generator.addNewExpression(temporarySecond,temporarySecond,'+','1')#tSecond=tSecond+1
+                        generator.addNewLine()
+                        size += 1
+                typeAssistant.append(type)#add type
+                if self.manyDimension:#if many dimension
+                    return ReturnData(temporaryFirst, 'array', True,0, typeAssistant)#Return adata
+                if self.onStruct == False:#only if onStruct is false
+                    symbol = table.setTable(self.id,self.type,True)#set table
+                    symbol.setTypeAssistant(typeAssistant)#edit data
+                    symbol.setSize(size)
+                    temporaryPosition=symbol.position#temporary position
+                    if not symbol.isGlobal:
+                        temporaryPosition=generator.addNewTemporary()
+                        generator.addNewExpression(temporaryPosition, 'P','+', symbol.position)
+                    generator.setStack(temporaryPosition,temporaryFirst)#stack[int(temporaryPosition)]=tFirst
+                    generator.addNewComment('End array')
+                else:
+                    return ReturnData(temporaryFirst, 'array', True,0, typeAssistant)#only return data
+    '''Getter & setter'''
+    def getTypeAssistant(self):
+        return self.typeAssistant
+    def setTypeAssistant(self, type):
+        self.typeAssistant = type
+
+    def getType(self):
+        return self.type
+
+    def getId(self):
+        return self.id
+    def setId(self, id):
+        self.id = id
     
+    def getSize(self):
+        return self.size
