@@ -4,6 +4,7 @@ class Tree_:
         self.instructions = instructions
         self.functions = []
         self.exceptions = []
+        self.interfaces = {}
         self.console = ""
         self.globalScope = None
         self.globalScopeExecuted = {}

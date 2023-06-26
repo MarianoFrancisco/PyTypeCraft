@@ -566,24 +566,24 @@ lexer.input(entrada)
 # test_lexer(lexer)
 
 
-instrucciones = parse(entrada)
-ast = Tree_(instrucciones)
-globalScope = SymbolTable()
-ast.setGlobalScope(globalScope)
-add_natives(ast)
+# instrucciones = parse(entrada)
+# ast = Tree_(instrucciones)
+# globalScope = SymbolTable()
+# ast.setGlobalScope(globalScope)
+# add_natives(ast)
 
-for instruccion in ast.getInstr():     
-    if isinstance(instruccion, Function):
-        ast.setFunctions(instruccion)
+# for instruccion in ast.getInstr():     
+#     if isinstance(instruccion, Function):
+#         ast.setFunctions(instruccion)
 
-for instruccion in ast.getInstr():
-    if not(isinstance(instruccion, Function)):
-        value = instruccion.execute(ast,globalScope)
-        if isinstance(value, CompilerException):
-            ast.setExceptions(value)
-    """ value = instruccion.execute(ast,globalScope)
-    if isinstance(value, CompilerException):
-        ast.setExceptions(value) """
-print(ast.getConsole())
-for err in ast.getExceptions():
-    print(err)
+# for instruccion in ast.getInstr():
+#     if not(isinstance(instruccion, Function)):
+#         value = instruccion.execute(ast,globalScope)
+#         if isinstance(value, CompilerException):
+#             ast.setExceptions(value)
+#     """ value = instruccion.execute(ast,globalScope)
+#     if isinstance(value, CompilerException):
+#         ast.setExceptions(value) """
+# print(ast.getConsole())
+# for err in ast.getExceptions():
+#     print(err)
