@@ -10,8 +10,8 @@ from ..Semantic.symbol_table import SymbolTable
 
 class For(Abstract):
 
-    def __init__(self, requirement, restriction, variation, instruction, line,column):
-        self.requirement = requirement
+    def __init__(self, declaration, restriction, variation, instruction, line,column):
+        self.declaration = declaration
         self.restriction = restriction
         self.variation = variation
         self.instruction = instruction
@@ -19,8 +19,8 @@ class For(Abstract):
     
     def execute(self, tree, table):
         entorn = SymbolTable(table)
-        requirement = self.requirement.execute(tree, entorn)
-        if isinstance(requirement, CompilerException): return requirement
+        declaration = self.declaration.execute(tree, entorn)
+        if isinstance(declaration, CompilerException): return declaration
 
         restriction = self.restriction.execute(tree, entorn)
         if isinstance(restriction, CompilerException): return restriction
@@ -39,14 +39,14 @@ class For(Abstract):
                 if isinstance(result, ReservedContinue): break
             variation = self.variation.execute(tree, entorn)
             if isinstance(variation, CompilerException): return variation
-            symbol = Symbol(self.requirement.id, self.requirement.type, variation, self.line, self.column)
-            # Actualizando el valor de la variable en la tabla de simbolos
-            value = entorn.updateSymbol(symbol)
+            # symbol = Symbol(self.declaration.id, self.declaration.type, variation, self.line, self.column)
+            # # Actualizando el valor de la variable en la tabla de simbolos
+            # value = entorn.updateSymbol(symbol)
 
-            if isinstance(value, CompilerException): return value
+            # if isinstance(value, CompilerException): return value
             
-            # primitive = Primitive(variation, self.requirement.type, self.requirement.line, self.requirement.column)
-            # result = VariableAssignation(self.requirement.id, primitive, primitive.line, primitive.column).execute(tree, entorn)
+            # primitive = Primitive(variation, self.declaration.type, self.declaration.line, self.declaration.column)
+            # result = VariableAssignation(self.declaration.id, primitive, primitive.line, primitive.column).execute(tree, entorn)
             # if isinstance(result, CompilerException): return result
             restriction = self.restriction.execute(tree, entorn)
             if isinstance(restriction, CompilerException):

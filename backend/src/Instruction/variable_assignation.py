@@ -30,3 +30,39 @@ class VariableAssignation(Abstract):
         if isinstance(result, CompilerException):
             return result
         return None
+    
+# DEFINIR BIEN LA ASIGNACION DE VARIABLES
+class VariableArrayAssignation(VariableAssignation):
+    def __init__(self, id, value, indexes, line, column):
+        super().__init__(id, value, line, column)
+        self.indexes = indexes
+
+    def execute(self, tree, table):
+        valueResult = self.value.execute(tree, table)
+        if isinstance(valueResult, CompilerException): return valueResult
+        symbol = table.getSymbolById(self.id)
+        if symbol == None:
+            return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
+        # if not isinstance(symbol, ArraySymbol)
+        # componer el seteo, ya que se reemplaza todo el array
+        indexes = []
+        for index in self.indexes:
+            indexResult = index.execute(tree, table)
+            if isinstance(indexResult, CompilerException): return indexResult
+            if index.type != 'number':
+                return CompilerException("Semantico", f"El valor {indexResult} no es un indice numerico valido para acceder al arreglo", index.line, index.column)
+            indexes.append(indexResult)
+
+        result = self.setValueArrayIndex(symbol.value, indexes, valueResult)
+        if isinstance(result, CompilerException): return result
+        return None
+    
+    def setValueArrayIndex(self, arr, indexes, val):
+        try:
+            target = arr
+            for index in indexes[:-1]:
+                target = target[index]
+            target[indexes[-1]] = val
+        except (IndexError, TypeError):
+            return CompilerException("Semantico", "Indice fuera de rango", self.line, self.column)
+        else: return None

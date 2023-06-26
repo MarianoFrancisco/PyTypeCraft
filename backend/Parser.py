@@ -1,10 +1,13 @@
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
+from src.Instruction.struct import Struct
+from src.Expression.null import Null
+from src.Expression.struct_expression import StructExpression
 from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.reserved_continue import ReservedContinue
 from src.Expression.array import Array
 from src.Instruction.loop_while import While
-from src.Instruction.variable_assignation import VariableAssignation
+from src.Instruction.variable_assignation import VariableAssignation, VariableArrayAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
@@ -79,6 +82,7 @@ def p_instruccion(p):
                     | assignment SEMI
                     | start_if SEMI
                     | function SEMI
+                    | struct SEMI
                     | call_function SEMI
                     | while SEMI
                     | for SEMI
@@ -93,6 +97,7 @@ def p_instruccion_out_semi(p):
                     | assignment
                     | start_if
                     | function
+                    | struct
                     | call_function
                     | while
                     | for
@@ -111,6 +116,34 @@ def p_type(p):
             | ANY
             '''
     p[0]=p[1]
+
+def p_type_array(p):
+    '''type : NUMBER dimensions_array
+            | BOOLEAN dimensions_array
+            | STRING dimensions_array
+            | ANY dimensions_array
+            '''
+    p[0] = p[1]+p[2]
+
+# type_function
+def p_type_function(p):
+    '''type_function : type
+                     | VOID'''
+    p[0]=p[1]
+
+''' array dimension'''
+def p_dimensions_array(p):
+    'dimensions_array : dimensions_array dimension_array'
+    p[1] = p[1] + p[2]
+    p[0] = p[1]
+
+def p_dimensions_array_1(p):
+    'dimensions_array : dimension_array'
+    p[0] = p[1]
+
+def p_dimension_array(p):
+    'dimension_array : LBRACKET RBRACKET'
+    p[0] = '[]'
 
 ''' Concat '''
 
@@ -132,14 +165,18 @@ def p_assignment(p):
     p[0] = VariableAssignation(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
 # let a:String = "abc" let a:Number = [1,2,3]
 
+def p_assignment_array(p):
+    'assignment : ID indexes_array EQ expression'
+    p[0] = VariableArrayAssignation(p[1], p[4], p[2], p.lineno(1), find_column(input, p.slice[1]))
+
 ''' Declaration'''
 def p_declaration_assignment_type(p):
     'declaration : LET ID COLON type EQ expression'
     p[0] = VariableDeclaration(p[2], p[4], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
-def p_declaration_assignment_type_array(p):
-    'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
-    p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
+# def p_declaration_assignment_type_array(p):
+#     'declaration : LET ID COLON type LBRACKET RBRACKET EQ expression'
+#     p[0] = VariableDeclaration(p[2], f'Array<{p[4]}>', p[8], p.lineno(1), find_column(input, p.slice[1]))
 
 # def p_assignment_arrays(p):
 #     'assignment : LET ID COLON type EQ LBRACE datas_array RBRACE'
@@ -162,6 +199,23 @@ def p_declaration_notype(p):
     'declaration : LET ID'
     p[0] = VariableDeclaration(p[2], 'any', None, p.lineno(1), find_column(input, p.slice[1]))
 
+''' Struct '''
+# data_struct
+def p_struct(p):
+    'struct : INTERFACE ID LBRACE multidata_struct RBRACE'
+    # implementar logica para reconocer
+    p[0] = Struct(p[2], p[4], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_multidata_struct(p):
+    '''multidata_struct : multidata_struct parameter SEMI
+                        | multidata_struct parameter'''
+    p[1].append(p[2])
+    p[0] = p[1]
+def p_multidata_struct_1(p):
+    '''multidata_struct : parameter SEMI
+                        | parameter'''
+    p[0] = [p[1]]
+
 ''' Function'''
 #function a(){instructions}
 def p_function(p):
@@ -172,6 +226,13 @@ def p_function_parameter(p):
     'function : FUNCTION ID LPAREN parameters RPAREN LBRACE instructions RBRACE'
     p[0]=Function(p[2], p[4], p[7], p.lineno(1), find_column(input, p.slice[1]))
 
+def p_function_type(p):
+    'function : FUNCTION ID LPAREN RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]= Function(p[2],[],p[8], p.lineno(1), find_column(input, p.slice[1]), p[6])
+#function a(x){instructions}
+def p_function_parameter_type(p):
+    'function : FUNCTION ID LPAREN parameters RPAREN COLON type_function LBRACE instructions RBRACE'
+    p[0]=Function(p[2], p[4], p[9], p.lineno(1), find_column(input, p.slice[1]), p[7])
 ''' Call function '''
 
 # a(x)
@@ -267,21 +328,6 @@ def p_while(p):
     'while : WHILE LPAREN expression RPAREN LBRACE instructions RBRACE'
     p[0] = While(p[3], p[6], p.lineno(1), find_column(input, p.slice[1]))
 
-''' array indexes'''
-def indexes_array(p):
-    'indexes_array : indexes_array index_array'
-    p[1].append(p[2])
-    p[0] = p[1]
-
-def indexes_array_1(p):
-    'indexes_array : index_array'
-    p[0] = [p[1]]
-
-def index_array(p):
-    'index_array : LBRACKET expression RBRACKET'
-    p[0] = p[2]
-
-
 # (3+2)*3
 def p_expression_paren(p):
     'expression : LPAREN expression RPAREN'
@@ -326,6 +372,27 @@ def p_expression_array(p):
     # CREAR EL ARRAY CON LOS DATOS QUE TRAE PARAMETER CALL
     p[0] = Array(p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+''' Struct Expression'''
+
+def p_expression_struct(p):
+    'expression : LBRACE struct_attributes RBRACE'
+    # CREAR EL STRUCT CON LOS DATOS QUE TRAE STRUCT ATTRIBUTES
+    p[0] = StructExpression(p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+''' Struct attributes'''
+def p_struct_attributes(p):
+    'struct_attributes : struct_attributes COMMA struct_attribute'
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_struct_attributes_1(p):
+    'struct_attributes : struct_attribute'
+    p[0] = [p[1]]
+
+def p_struct_attribute(p):
+    'struct_attribute : ID COLON expression'
+    p[0] = {"id": p[1], "value": p[3]}
+
 ''' Primivite '''
 # 1234
 def p_expression_number(p):
@@ -351,11 +418,30 @@ def p_expression_id(p):
     'expression : ID'
     p[0] = Identifier(p[1], p.lineno(1), find_column(input, p.slice[1]))
 
-# # asdf1234
-# def p_expression_id_array(p):
-#     'expression : ID indexes_array'
-#     p[0] = IdentifierArray(p[1], p.lineno(1), find_column(input, p.slice[1]))
+# NULL
+def p_expression_null(p):
+    'expression : NULL'
+    p[0] = Null(p.lineno(1), find_column(input, p.slice[1]))
 
+# asdf1234
+def p_expression_id_array(p):
+    'expression : ID indexes_array'
+    p[0] = IdentifierArray(p[1], p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+
+''' array indexes'''
+def p_indexes_array(p):
+    'indexes_array : indexes_array index_array'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+def p_indexes_array_1(p):
+    'indexes_array : index_array'
+    p[0] = [p[1]]
+
+def p_index_array(p):
+    'index_array : LBRACKET expression RBRACKET'
+    p[0] = p[2]
 
 '''Increment and decrement'''
 # i++, i--
@@ -427,7 +513,7 @@ def add_natives(ast):
     ast.setFunctions(toFixed)
     #length
     name = "length"
-    parameter=[{'type': 'string', 'id': 'length#parameter'}]
+    parameter=[{'type': 'any', 'id': 'length#parameter'}]
     length=Length(name,parameter,instructions,-1,-1)
     ast.setFunctions(length)
     #toExponential
@@ -455,16 +541,18 @@ def parse(inp):
 
 
 entrada = '''
-
-for (let x of 'Hola mundo'){
-    console.log(x)
-}
-
-
-console.log(h)
-console.log(concat(h,i))
-push(h,3)
-console.log(h)
+let a:number = -1;
+while (a < 5){
+    a = a + 1;
+    if (a === 3){
+        console.log("a");
+        continue;
+    } else if (a === 4){
+        console.log("b");
+        break;
+    };
+    console.log("El valor de a es: ", a, ", ");
+};
 '''
 
 def test_lexer(lexer):
@@ -478,24 +566,24 @@ lexer.input(entrada)
 # test_lexer(lexer)
 
 
-instrucciones = parse(entrada)
-ast = Tree_(instrucciones)
-globalScope = SymbolTable()
-ast.setGlobalScope(globalScope)
-add_natives(ast)
+# instrucciones = parse(entrada)
+# ast = Tree_(instrucciones)
+# globalScope = SymbolTable()
+# ast.setGlobalScope(globalScope)
+# add_natives(ast)
 
-for instruccion in ast.getInstr():     
-    if isinstance(instruccion, Function):
-        ast.setFunctions(instruccion)
+# for instruccion in ast.getInstr():     
+#     if isinstance(instruccion, Function):
+#         ast.setFunctions(instruccion)
 
-for instruccion in ast.getInstr():
-    if not(isinstance(instruccion, Function)):
-        value = instruccion.execute(ast,globalScope)
-        if isinstance(value, CompilerException):
-            ast.setExceptions(value)
-    """ value = instruccion.execute(ast,globalScope)
-    if isinstance(value, CompilerException):
-        ast.setExceptions(value) """
-print(ast.getConsole())
-for err in ast.getExceptions():
-    print(err)
+# for instruccion in ast.getInstr():
+#     if not(isinstance(instruccion, Function)):
+#         value = instruccion.execute(ast,globalScope)
+#         if isinstance(value, CompilerException):
+#             ast.setExceptions(value)
+#     """ value = instruccion.execute(ast,globalScope)
+#     if isinstance(value, CompilerException):
+#         ast.setExceptions(value) """
+# print(ast.getConsole())
+# for err in ast.getExceptions():
+#     print(err)

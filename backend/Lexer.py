@@ -9,6 +9,7 @@ keywords = {
     'log': 'LOG',
     'concat': 'CONCAT',
     'null': 'NULL',
+    'void': 'VOID',
     'number': 'NUMBER',
     'boolean': 'BOOLEAN',
     'string': 'STRING',
