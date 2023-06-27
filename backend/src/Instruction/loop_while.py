@@ -4,7 +4,7 @@ from ..Instruction.reserved_return import ReservedReturn
 from ..Semantic.symbol_table import SymbolTable
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
-
+import uuid
 
 class While(Abstract):
 
@@ -43,3 +43,24 @@ class While(Abstract):
                         break
             else:
                 break
+
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "While")
+
+        # Create node for condition
+        condition_id = self.condition.plot(root)
+        root.edge(node_id, condition_id)
+
+        # Create node for instructions
+        if self.instructions:
+            instructions_id = str(uuid.uuid4())
+            root.node(instructions_id, "Instructions")
+            root.edge(node_id, instructions_id)
+
+            # Create nodes for each instruction and connect them to the instructions node
+            for instruction in self.instructions:
+                instruction_node_id = instruction.plot(root)
+                root.edge(instructions_id, instruction_node_id)
+
+        return node_id

@@ -2,7 +2,7 @@ from ..Abstract.abstract import Abstract
 from ..Semantic.exception import CompilerException
 from ..Semantic.symbol import Symbol
 from ..Semantic.symbol_table import SymbolTable
-
+import uuid
 class CallFunction(Abstract):
 
     def __init__(self, name,parameters,line,column):
@@ -56,3 +56,20 @@ class CallFunction(Abstract):
         if isinstance(value, CompilerException): return value
         self.type = function.type
         return value
+
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, f"Call Function: {self.name}")
+
+        # Create node for parameters
+        if self.parameters:
+            parameters_id = str(uuid.uuid4())
+            root.node(parameters_id, "Parameters")
+            root.edge(node_id, parameters_id)
+
+            # Create nodes for each parameter and connect them to the parameters node
+            for parameter in self.parameters:
+                parameter_node_id = parameter.plot(root)
+                root.edge(parameters_id, parameter_node_id)
+
+        return node_id

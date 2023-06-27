@@ -1,5 +1,6 @@
 
 from ..Abstract.abstract import Abstract
+import uuid
 
 class ReservedBreak(Abstract):
 
@@ -9,3 +10,8 @@ class ReservedBreak(Abstract):
     
     def execute(self, tree, table):
         return self
+    
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "Break")
+        return node_id

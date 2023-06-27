@@ -1,5 +1,6 @@
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
+import uuid
 
 
 class Identifier(Abstract):
@@ -15,6 +16,11 @@ class Identifier(Abstract):
             return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
         self.type = symbol.type
         return symbol.value
+    
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, str(self.id))
+        return id
 
 # llamando valores que sean de un array a traves de sus indices PENDIENTE DE IMPLEMENTAR
 class IdentifierArray(Abstract):
@@ -43,6 +49,23 @@ class IdentifierArray(Abstract):
         else:
             return arr
 
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        first_element_id = str(uuid.uuid4())
+        root.node(first_element_id, self.id)
+        prevId = id
+        for index in self.indexes:
+            inner_id = str(uuid.uuid4())
+            root.node(inner_id, '[ ]=')
+            root.edge(prevId, inner_id)
+            root.edge(inner_id, index.plot(root))
+            prevId = inner_id
+
+        root.node(id, '[ ]=')
+        root.edge(id, first_element_id)
+        return id
+
+    
 class IdentifierStruct(Abstract):
     def __init__(self, id, keys, line, column):
         super().__init__(line, column)
@@ -61,3 +84,19 @@ class IdentifierStruct(Abstract):
             return CompilerException("Semantico", f"El struct no contiene el atributo {key}", self.line, self.column)
         else:
             return value
+        
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        first_element_id = str(uuid.uuid4())
+        root.node(first_element_id, self.id)
+        prevId = id
+        for key in self.keys:
+            inner_id = str(uuid.uuid4())
+            root.node(inner_id, '.')
+            root.edge(prevId, inner_id)
+            root.edge(inner_id, key)
+            prevId = inner_id
+
+        root.node(id, '.')
+        root.edge(id, first_element_id)
+        return id
