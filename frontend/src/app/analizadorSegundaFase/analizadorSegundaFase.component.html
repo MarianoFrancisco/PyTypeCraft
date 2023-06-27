@@ -10,7 +10,7 @@
                 <input (click)="analizar()" type="button" class="btn btn-dark" value="Analizar">
             </li>
             <li class="nav-link">
-                <input style="display:none;" accept=".ty" type="file" (change)="abrir($event)" #archivo>
+                <input style="display:none;" accept=".ts" type="file" (change)="abrir($event)" #archivo>
                 <input (click)="archivo.click()" type="button" class="btn btn-dark" value="Abrir">
             </li>
             <li class="nav-link">
@@ -118,8 +118,6 @@
                                 <th>Identificador</th>
                                 <th>Tipo</th>
                                 <th>Entorno</th>
-                                <th>Linea</th>
-                                <th>Columna</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,8 +126,6 @@
                                 <td>{{e.id}}</td>
                                 <td>{{e.tipo}}</td>
                                 <td>{{e.entorno}}</td>
-                                <td>{{e.fila}}</td>
-                                <td>{{e.colum}}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -44,7 +44,6 @@ class VariableArrayAssignation(VariableAssignation):
         if symbol == None:
             return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
         # if not isinstance(symbol, ArraySymbol)
-        # componer el seteo, ya que se reemplaza todo el array
         indexes = []
         for index in self.indexes:
             indexResult = index.execute(tree, table)
@@ -65,4 +64,30 @@ class VariableArrayAssignation(VariableAssignation):
             target[indexes[-1]] = val
         except (IndexError, TypeError):
             return CompilerException("Semantico", "Indice fuera de rango", self.line, self.column)
+        else: return None
+
+class VariableStructAssignation(VariableAssignation):
+    def __init__(self, id, keys, value, line, column):
+        super().__init__(id, value, line, column)
+        self.keys = keys
+
+    def execute(self, tree, table):
+        valueResult = self.value.execute(tree, table)
+        if isinstance(valueResult, CompilerException): return valueResult
+        symbol = table.getSymbolById(self.id)
+        if symbol == None:
+            return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
+        result = self.setAttributeStruct(symbol.value, self.keys, valueResult)
+        if isinstance(result, CompilerException): return result
+        return None
+        
+    def setAttributeStruct(self, dictionary, keys, value):
+        try:
+            last_key = keys[-1]
+            nested_dict = dictionary
+            for key in keys[:-1]:
+                nested_dict = nested_dict[key]
+            nested_dict[last_key] = value
+        except (KeyError, TypeError):
+            return CompilerException("Semantico", f"No existe ese atributo en el struct {self.id}", self.line, self.column)
         else: return None

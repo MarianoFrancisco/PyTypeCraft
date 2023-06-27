@@ -103,7 +103,7 @@ export class AnalizadorSegundaFaseComponent implements OnInit {
     this.consola.setValue("");
     if(this.editorTexto.value)
     {
-      this.escribir(this.editorTexto.value,"tyty.ty","text/plain");
+      this.escribir(this.editorTexto.value,"PyTypeCraft.ts","text/plain");
     }
     else
     {

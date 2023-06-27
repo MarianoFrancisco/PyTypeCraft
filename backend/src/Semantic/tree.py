@@ -35,6 +35,11 @@ class Tree_:
                 return function
         return None
     
+    def addInterface(self, interface):
+        self.interfaces[interface.id] = interface
+
+    def getInterfaceById(self, id):
+        return self.interfaces.get(id)
     def getExceptions(self):
         return self.exceptions
     

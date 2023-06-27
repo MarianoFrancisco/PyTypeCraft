@@ -23,7 +23,7 @@ class CallFunction(Abstract):
                 
                 if isinstance(result_expression, CompilerException): return result_expression
                 
-                if function.parameters[count]['type'] == expression.type:
+                if function.parameters[count]['type'] == expression.type or isinstance(result_expression, list) or isinstance(result_expression, dict):
                     symbol = Symbol(str(function.parameters[count]['id']), expression.type, result_expression, self.line, self.column)
                     result = entorn.setTableFunction(symbol)
                     if isinstance(result, CompilerException): return result

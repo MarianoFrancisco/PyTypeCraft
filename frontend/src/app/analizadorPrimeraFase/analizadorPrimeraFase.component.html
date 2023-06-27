@@ -1,6 +1,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#" align="center">PyTypeCraft For FirstFase</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
+    <a class="navbar-brand" href="/analizarPrimeraFase" align="center">PyTypeCraft For First Fase</a><br>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -10,7 +10,7 @@
                 <input (click)="analizar()" type="button" class="btn btn-dark" value="Analizar">
             </li>
             <li class="nav-link">
-                <input style="display:none;" accept=".ty" type="file" (change)="abrir($event)" #archivo>
+                <input style="display:none;" accept=".ts" type="file" (change)="abrir($event)" #archivo>
                 <input (click)="archivo.click()" type="button" class="btn btn-dark" value="Abrir">
             </li>
             <li class="nav-link">

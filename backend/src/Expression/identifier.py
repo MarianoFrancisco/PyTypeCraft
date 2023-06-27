@@ -42,3 +42,22 @@ class IdentifierArray(Abstract):
             return CompilerException("Semantico", f"Indice fuera de rango", self.line, self.column)
         else:
             return arr
+
+class IdentifierStruct(Abstract):
+    def __init__(self, id, keys, line, column):
+        super().__init__(line, column)
+        self.id = id
+        self.keys = keys
+
+    def execute(self, tree, table):
+        symbol = table.getSymbolById(self.id)
+        if symbol == None:
+            return CompilerException("Semantico", f"Variable no encontrada {self.id}", self.line, self.column)
+        value = symbol.value
+        try:
+            for key in self.keys:
+                value = value[key]
+        except (KeyError, TypeError):
+            return CompilerException("Semantico", f"El struct no contiene el atributo {key}", self.line, self.column)
+        else:
+            return value

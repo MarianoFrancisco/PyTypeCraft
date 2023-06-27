@@ -14,26 +14,26 @@ export class AnalizadorSegundaFaseService {
     "Content-Type": "application/json"
   });
 
-  Analizer(codigo:String){
-    const url = 'https://calm-dusk-76175.herokuapp.com/prueba'
-    // const url = 'http://localhost:5200/prueba'
+  Analizer(code:String){
+    //const url = 'https://calm-dusk-76175.herokuapp.com/prueba'
+    const url = 'http://127.0.0.1:4000/compile'
     return this.http.post<any>(
       url,
       {
-        "codigo": codigo,
+        "code": code,
       }
     ).pipe(map(data=>data));
   }
 
   Errores(){
-    // const url = 'http://localhost:5200/errores'
-    const url = 'https://calm-dusk-76175.herokuapp.com/errores'
+    const url = 'http://127.0.0.1:4000/mistake'
+    //const url = 'https://calm-dusk-76175.herokuapp.com/errores'
     return this.http.get<any>(url)
   }
 
   Tabla(){
-    // const url = 'http://localhost:5200/simbolos'
-    const url = 'https://calm-dusk-76175.herokuapp.com/simbolos'
+    const url = 'http://127.0.0.1:4000/symbol'
+    //const url = 'https://calm-dusk-76175.herokuapp.com/simbolos'
     return this.http.get<any>(url)
   }
 }
