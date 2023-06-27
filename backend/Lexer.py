@@ -1,7 +1,7 @@
 import re
 import ply.lex as lex
 
-from backend.src.Semantic.exception import CompilerException
+from src.Semantic.exception import CompilerException
 
 errors = []
 
@@ -160,7 +160,7 @@ def t_skip_line(t):
 
 
 def t_error(t):
-    errors.append(CompilerException("Lexico", "Error Lexico" + t.value[0], t.lexer.lineno, find_column(input, t)))
+    #errors.append(CompilerException("Lexico", "Error Lexico" + lexer.lexdata, t.lexer.lineno, t.lexpos - lexer.lexdata.rfind('\n', 0, t.lexpos)))
     t.lexer.skip(1)
 
 def find_column(inp, tk):

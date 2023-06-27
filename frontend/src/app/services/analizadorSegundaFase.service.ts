@@ -15,8 +15,7 @@ export class AnalizadorSegundaFaseService {
   });
 
   Analizer(code:String){
-    //const url = 'https://calm-dusk-76175.herokuapp.com/prueba'
-    const url = 'http://127.0.0.1:4000/compile'
+    const url = 'http://34.28.167.82:5000/compile'
     return this.http.post<any>(
       url,
       {
@@ -26,14 +25,12 @@ export class AnalizadorSegundaFaseService {
   }
 
   Errores(){
-    const url = 'http://127.0.0.1:4000/mistake'
-    //const url = 'https://calm-dusk-76175.herokuapp.com/errores'
+    const url = 'http://34.28.167.82:5000/errores'
     return this.http.get<any>(url)
   }
 
   Tabla(){
-    const url = 'http://127.0.0.1:4000/symbol'
-    //const url = 'https://calm-dusk-76175.herokuapp.com/simbolos'
+    const url = 'http://34.28.167.82:5000/symbol'
     return this.http.get<any>(url)
   }
 }

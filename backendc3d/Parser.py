@@ -467,36 +467,36 @@ def parse(inp):
     lexer.lineno = 1
     return parser.parse(inp)
 
-entrada = '''
-let nombre:string =["H","O","L","A"];
-for(let i:number=0;i<=3;i++){
-    console.log(nombre[i])
-};
-'''
+# entrada = '''
+# let nombre:string =["H","O","L","A"];
+# for(let i:number=0;i<=3;i++){
+#     console.log(nombre[i])
+# };
+# '''
 
-def test_lexer(lexer):
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break  # No more input
-        print(tok)
+# def test_lexer(lexer):
+#     while True:
+#         tok = lexer.token()
+#         if not tok:
+#             break  # No more input
+#         print(tok)
 
-lexer.input(entrada)
-# test_lexer(lexer)
-callGenerator=C3DGenerator()
-callGenerator.clear()#Every ejecut clean all
-generator=callGenerator.getGenerator()
+# lexer.input(entrada)
+# # test_lexer(lexer)
+# callGenerator=C3DGenerator()
+# callGenerator.clear()#Every ejecut clean all
+# generator=callGenerator.getGenerator()
 
-instructions = parse(entrada)
-ast = Tree_(instructions)
-globalScope = SymbolTable()
-ast.setGlobalScope(globalScope)
-add_natives(ast)
+# instructions = parse(entrada)
+# ast = Tree_(instructions)
+# globalScope = SymbolTable()
+# ast.setGlobalScope(globalScope)
+# add_natives(ast)
 
-for instruction in ast.getInstr():
-    value = instruction.execute(ast,globalScope)
-    if isinstance(value, CompilerException):
-        ast.setExceptions(value)
-print(generator.getCode())
-for err in ast.getExceptions():
-    print(err)
+# for instruction in ast.getInstr():
+#     value = instruction.execute(ast,globalScope)
+#     if isinstance(value, CompilerException):
+#         ast.setExceptions(value)
+# print(generator.getCode())
+# for err in ast.getExceptions():
+#     print(err)

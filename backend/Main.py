@@ -2,10 +2,12 @@
 # Si no existe el CORS, no se puede acceder a los recursos de un servidor desde otro servidor
 from Parser import parse as Parser
 from Parser import add_natives as Natives
+from Parser import add_structs as Structs
 from src.Semantic.tree import Tree_
 from src.Semantic.exception import CompilerException
 from src.Semantic.symbol_table import SymbolTable
 from src.Instruction.function import Function
+from src.Instruction.struct import Struct
 from Lexer import errors, tokens, lexer
 from flask import Flask, request
 import json
@@ -45,10 +47,13 @@ def output():
     globalScope = SymbolTable()
     ast.setGlobalScope(globalScope)
     Natives(ast)
+    Structs(ast)
     for error in errors:
         ast.setExceptions(error)
     try:
         for instruction in ast.getInstr():     
+            if isinstance(instruction, Struct):
+                ast.addInterface(instruction)
             if isinstance(instruction, Function):
                 ast.setFunctions(instruction)
         for instruction in ast.getInstr():
@@ -57,11 +62,10 @@ def output():
                 if isinstance(value, CompilerException):
                     ast.setExceptions(value)
     except:
-        CompilerException("Structure","No has ingresado nada",0,0)
+        ast.setExceptions(CompilerException("Structure","No has ingresado nada",0,0))
     Exceptions = ast.getExceptions()
-    print(Exceptions)
-    global Simbolos
-    Simbolos = ast.getGlobalScope().table
+    global Symbols
+    Symbols = ast.getGlobalScope().getGlobalScope()
     consola = ast.getConsole()
     return json.dumps(consola)
 
@@ -72,79 +76,77 @@ def getMistake():
     value= []
     for exception in Exceptions:
         value.append(exception.toStringData())
-    
     return {'valores': value}
 
-# @app.route('/symbol')
-# def getTabla():
-#     global Simbolos
-#     Dic = []
-#     for x in Simbolos:
-#         aux = Simbolos[x].getValor()
-#         tipo = Simbolos[x].getTipo()
-#         tipo = getTipo(tipo)
-#         fila = Simbolos[x].getFila()
-#         colum = Simbolos[x].getColum()
-#         if isinstance(aux, List):
-#             aux = getValores(aux)
-#             a = []
-#             a.append(str(x))
-#             a.append(str(aux))
-#             a.append('Array')
-#             a.append('Global')
-#             a.append(str(fila))
-#             a.append(str(colum))
-#             Dic.append(a)
-#         elif isinstance(aux, Dict):
-#             aux = getValores2(aux)
-#             a = []
-#             a.append(str(x))
-#             a.append(str(aux))
-#             a.append('Struct')
-#             a.append('Global')
-#             a.append(str(fila))
-#             a.append(str(colum))
-#             Dic.append(a)
-#         else:
-#             a = []
-#             a.append(str(x))
-#             a.append(str(aux))
-#             a.append(tipo)
-#             a.append('Global')
-#             a.append(str(fila))
-#             a.append(str(colum))
-#             Dic.append(a)
-#     return {'valores':Dic}
+@app.route('/symbol')
+def getTable():
+    global Symbols
+    Dic = []
+    for symbol in Symbols:
+        value = Symbols[symbol].getValue()
+        type = Symbols[symbol].getType()
+        line = Symbols[symbol].line
+        column = Symbols[symbol].column
+        if isinstance(value, List):
+            value = getValueData(value)
+            saveSymbol = []
+            saveSymbol.append(str(symbol))
+            saveSymbol.append(str(value))
+            saveSymbol.append('Array')
+            saveSymbol.append('Global')
+            saveSymbol.append(str(line))
+            saveSymbol.append(str(column))
+            Dic.append(saveSymbol)
+        elif isinstance(value, Dict):
+            value = getValueDataSecond(value)
+            saveSymbol = []
+            saveSymbol.append(str(symbol))
+            saveSymbol.append(str(value))
+            saveSymbol.append('Struct')
+            saveSymbol.append('Global')
+            saveSymbol.append(str(line))
+            saveSymbol.append(str(column))
+            Dic.append(saveSymbol)
+        else:
+            saveSymbol = []
+            saveSymbol.append(str(symbol))
+            saveSymbol.append(str(value))
+            saveSymbol.append(type)
+            saveSymbol.append('Global')
+            saveSymbol.append(str(line))
+            saveSymbol.append(str(column))
+            Dic.append(saveSymbol)
+    return {'valores':Dic}
 
-# def getValores(anterior):
-#     actual = []
-#     for x in anterior:
-#         a = x.getValor()
-#         if isinstance(a, List):
-#             value = getValores(a)
-#             actual.append(value)
-#         elif isinstance(a, Dict):
-#             value = getValores2(a)
-#             actual.append(value)
-#         else:
-#             actual.append(x.getValor())
-#     return actual
+def getValueData(previous):
+    current = []
+    for value in previous:
+        data = value.getValor()
+        if isinstance(data, List):
+            value = getValueData(data)
+            current.append(value)
+        elif isinstance(data, Dict):
+            value = getValueDataSecond(data)
+            current.append(value)
+        else:
+            current.append(value.getValue())
+    return current
 
-# def getValores2( dict):
-#     val = "("
-#     for x in dict:
-#         a = dict[x].getValor()
-#         if isinstance(a, List):
-#             value = getValores(a)
-#             val += str(value) + ", "
-#         elif isinstance(a, Dict):
-#             value = getValores2(a)
-#             val += str(value) + ", "
-#         else:
-#             val += str(dict[x].getValor()) + ", "
-#     val = val[:-2]  
-#     val += ")"
-#     return val
+def getValueDataSecond( dict):
+    val = "("
+    for value in dict:
+        data = dict[value].getValor()
+        if isinstance(data, List):
+            value = getValueData(data)
+            val += str(value) + ", "
+        elif isinstance(data, Dict):
+            value = getValueDataSecond(data)
+            val += str(value) + ", "
+        else:
+            val += str(dict[value].getValue()) + ", "
+    val = val[:-2]  
+    val += ")"
+    return val
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug = False, port=4000)
