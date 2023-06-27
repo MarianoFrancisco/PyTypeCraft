@@ -1,5 +1,5 @@
 from ..Abstract.abstract import Abstract
-
+import uuid
 
 class ConsoleLog(Abstract):
 
@@ -14,3 +14,11 @@ class ConsoleLog(Abstract):
             result += str(value) + ' '
         tree.updateConsole(result.strip())
         return None
+    
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, "console.log")
+        for param in self.params:
+            param_id = param.plot(root)
+            root.edge(id, param_id)
+        return id

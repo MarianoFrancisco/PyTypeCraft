@@ -3,6 +3,7 @@ from ..Instruction.variable_assignation import VariableAssignation
 from ..Expression.identifier import Identifier
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
+import uuid
 
 class ArithmeticUnaryOperation(Abstract):
     def __init__(self, expression, operator, line, column):
@@ -32,6 +33,13 @@ class ArithmeticUnaryOperation(Abstract):
             result = VariableAssignation(self.expression.id, primitive, self.line, self.column).execute(tree, table)
             if isinstance(result, CompilerException): return result
             return expressionValue-1
+        
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, self.operator)
+        left_id = self.expression.plot(root)
+        root.edge(id, left_id)
+        return id
 
 class BooleanUnaryOperation(Abstract):
     def __init__(self, expression, operator, line, column):
@@ -48,3 +56,10 @@ class BooleanUnaryOperation(Abstract):
             return CompilerException('Semantico', f'La expresion {expressionValue} no es un boolean', self.line, self.column)
         if self.operator == '!':
             return not expressionValue
+        
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, self.operator)
+        left_id = self.expression.plot(root)
+        root.edge(id, left_id)
+        return id
