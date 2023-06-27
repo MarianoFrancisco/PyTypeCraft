@@ -7,7 +7,7 @@ from src.Instruction.reserved_break import ReservedBreak
 from src.Instruction.reserved_continue import ReservedContinue
 from src.Expression.array import Array
 from src.Instruction.loop_while import While
-from src.Instruction.variable_assignation import VariableAssignation, VariableArrayAssignation
+from src.Instruction.variable_assignation import VariableAssignation, VariableArrayAssignation, VariableStructAssignation
 from src.Instruction.variable_declaration import VariableDeclaration
 from src.Expression.unary_operation import ArithmeticUnaryOperation, BooleanUnaryOperation
 from src.Instruction.if_declaration import IfSentence
@@ -18,7 +18,7 @@ from src.Instruction.reserved_return import ReservedReturn
 from src.Instruction.console_log import ConsoleLog
 from src.Semantic.symbol_table import SymbolTable
 from src.Semantic.exception import CompilerException
-from src.Expression.identifier import Identifier, IdentifierArray
+from src.Expression.identifier import Identifier, IdentifierArray, IdentifierStruct
 from src.Native.native_typeof import TypeOf
 from src.Native.native_tostring import ToString
 from src.Native.native_tolowercase import ToLowerCase
@@ -114,6 +114,7 @@ def p_type(p):
             | BOOLEAN
             | STRING
             | ANY
+            | ID
             '''
     p[0]=p[1]
 
@@ -122,6 +123,7 @@ def p_type_array(p):
             | BOOLEAN dimensions_array
             | STRING dimensions_array
             | ANY dimensions_array
+            | ID dimensions_array
             '''
     p[0] = p[1]+p[2]
 
@@ -168,6 +170,11 @@ def p_assignment(p):
 def p_assignment_array(p):
     'assignment : ID indexes_array EQ expression'
     p[0] = VariableArrayAssignation(p[1], p[4], p[2], p.lineno(1), find_column(input, p.slice[1]))
+
+def p_assignment_struct(p):
+    'assignment : ID DOT struct_datas EQ expression'
+    p[0] = VariableStructAssignation(p[1], p[3], p[5], p.lineno(1), find_column(input, p.slice[1]))
+
 
 ''' Declaration'''
 def p_declaration_assignment_type(p):
@@ -428,6 +435,10 @@ def p_expression_id_array(p):
     'expression : ID indexes_array'
     p[0] = IdentifierArray(p[1], p[2], p.lineno(1), find_column(input, p.slice[1]))
 
+def p_expression_id_struct(p):
+    'expression : ID DOT struct_datas'
+    # IMPLEMENTAR LOGICA PARA EXTRAER ATRIBUTOS DE UN STRUCT
+    p[0] = IdentifierStruct(p[1], p[3], p.lineno(1), find_column(input, p.slice[1]))
 
 ''' array indexes'''
 def p_indexes_array(p):
@@ -442,6 +453,17 @@ def p_indexes_array_1(p):
 def p_index_array(p):
     'index_array : LBRACKET expression RBRACKET'
     p[0] = p[2]
+
+''' struct attributes '''
+
+def p_struct_datas(p):
+    'struct_datas : struct_datas DOT ID'
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_struct_datas_1(p):
+    'struct_datas : ID'
+    p[0] = [p[1]]
 
 '''Increment and decrement'''
 # i++, i--
@@ -522,6 +544,16 @@ def add_natives(ast):
     toExponential=ToExponential(name,parameters,instructions,-1,-1)
     ast.setFunctions(toExponential)
 
+def add_structs(ast):
+    data = []
+    string = Struct('string', data, -1, -1)
+    ast.addInterface(string)
+    number = Struct('number', data, -1, -1)
+    ast.addInterface(number)
+    boolean = Struct('boolean', data, -1, -1)
+    ast.addInterface(boolean)
+    any = Struct('any', data, -1, -1)
+    ast.addInterface(any)
 
 def p_error(t):
     print(" Error sintáctico en '%s'" % t.value, t)
@@ -541,18 +573,67 @@ def parse(inp):
 
 
 entrada = '''
-let a:number = -1;
-while (a < 5){
-    a = a + 1;
-    if (a === 3){
-        console.log("a");
-        continue;
-    } else if (a === 4){
-        console.log("b");
-        break;
-    };
-    console.log("El valor de a es: ", a, ", ");
-};
+interface Actor {
+    nombre: string;
+    edad: number;
+}
+
+interface Pelicula {
+    nombre: string;
+    posicion: number;
+}
+
+interface Contrato {
+    actor: Actor;
+    pelicula: Pelicula;
+}
+
+let actores = ["Elizabeth Olsen", "Adam Sandler", "Christian Bale", "Jennifer Aniston"];
+let peliculas = ["Avengers: Age of Ultron", "Mr. Deeds", "Batman: The Dark Knight", "Marley & Me"];
+
+function contratar(actor: Actor, pelicula: Pelicula): Contrato {
+    return {
+        actor: actor,
+        pelicula: pelicula
+    }
+}
+
+function crearActor(nombre: string, edad: number): Actor {
+    return {
+        nombre: nombre,
+        edad: edad
+}
+}
+
+function crearPelicula(nombre: string, posicion: number): Pelicula {
+    return {
+        nombre: nombre,
+        posicion: posicion
+    }
+}
+function imprimir(contrato: Contrato): void {
+    console.log("Actor:", contrato.actor.nombre, "   Edad:", contrato.actor.edad);
+    console.log("Pelicula:", contrato.pelicula.nombre, "   Genero:", contrato.pelicula.posicion);
+}
+function contratos(): void {
+    for (let i = 1; i < 3; i++) {
+        let contrato = {
+        actor: { nombre: "", edad: 0 },
+        pelicula: { nombre: "", posicion: 0 }
+        };
+        if (i < 4) {
+        let actor = crearActor(actores[i - 1], i + 38);
+        let pelicula = crearPelicula(peliculas[i - 1], i);
+        contrato = contratar(actor, pelicula);
+        }
+        imprimir(contrato);
+    }
+}
+
+contratos();
+
+
+
 '''
 
 def test_lexer(lexer):
@@ -566,24 +647,27 @@ lexer.input(entrada)
 # test_lexer(lexer)
 
 
-# instrucciones = parse(entrada)
-# ast = Tree_(instrucciones)
-# globalScope = SymbolTable()
-# ast.setGlobalScope(globalScope)
-# add_natives(ast)
+instrucciones = parse(entrada)
+ast = Tree_(instrucciones)
+globalScope = SymbolTable()
+ast.setGlobalScope(globalScope)
+add_natives(ast)
+add_structs(ast)
 
-# for instruccion in ast.getInstr():     
-#     if isinstance(instruccion, Function):
-#         ast.setFunctions(instruccion)
+for instruccion in ast.getInstr():
+    if isinstance(instruccion, Struct):
+        ast.addInterface(instruccion)
+    if isinstance(instruccion, Function):
+        ast.setFunctions(instruccion)
 
-# for instruccion in ast.getInstr():
-#     if not(isinstance(instruccion, Function)):
-#         value = instruccion.execute(ast,globalScope)
-#         if isinstance(value, CompilerException):
-#             ast.setExceptions(value)
-#     """ value = instruccion.execute(ast,globalScope)
-#     if isinstance(value, CompilerException):
-#         ast.setExceptions(value) """
-# print(ast.getConsole())
-# for err in ast.getExceptions():
-#     print(err)
+for instruccion in ast.getInstr():
+    if not(isinstance(instruccion, Function)):
+        value = instruccion.execute(ast,globalScope)
+        if isinstance(value, CompilerException):
+            ast.setExceptions(value)
+    """ value = instruccion.execute(ast,globalScope)
+    if isinstance(value, CompilerException):
+        ast.setExceptions(value) """
+print(ast.getConsole())
+for err in ast.getExceptions():
+    print(err)

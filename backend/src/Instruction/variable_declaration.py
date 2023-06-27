@@ -1,3 +1,4 @@
+from ..Expression.struct_expression import StructExpression
 from ..Expression.array import Array
 from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
@@ -30,12 +31,14 @@ class VariableDeclaration(Abstract):
             return CompilerException("Semantico", f"La expresion {value} no puede asignarse a '{self.id}', ya que no es un arreglo", self.line, self.column)
         if self.type != 'any' and not ('[]' in self.type) and isinstance(self.value, Array):
             return CompilerException("Semantico", f"La variable '{self.id}' no se le puede asignar un arreglo", self.line, self.column)
-        if 'any' in str(self.type) or str(self.value.type) in str(self.type):
+        if 'any' in str(self.type) or str(self.value.type) in str(self.type) or tree.getInterfaceById(self.type) != None:
             symbol = None
             if 'any' in self.type:
                 symbol = AnySymbol(str(self.id), self.value.type, value, self.line, self.column)
             elif isinstance(self.value, Array):
                 symbol = ArraySymbol(str(self.id), self.value.type, value, self.line, self.column)
+            elif isinstance(value, dict):
+                symbol = Symbol(str(self.id), self.type, value, self.line, self.column)
             else:
                 symbol = Symbol(str(self.id), self.value.type, value, self.line, self.column)
             result = table.addSymbol(symbol)
