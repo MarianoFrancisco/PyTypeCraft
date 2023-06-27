@@ -15,6 +15,7 @@ from flask_cors import CORS
 from flask.helpers import url_for
 from werkzeug.utils import redirect
 from typing import Dict, List
+from graphviz import Graph
 import sys
 sys.setrecursionlimit(10000000)
 
@@ -41,6 +42,7 @@ def output():
     global valueTemporary
     global Exceptions
     global Table
+    global ast
     Table = {}
     instructions = Parser(valueTemporary)
     ast = Tree_(instructions)
@@ -77,6 +79,29 @@ def getMistake():
     for exception in Exceptions:
         value.append(exception.toStringData())
     return {'valores': value}
+
+@app.route('/plot')
+def getAstPlot():
+    global ast
+    try:
+        if len(ast.getExceptions()) > 0: return {"error" : "Existen errores en el codigo, no se puede generar el arbol"}
+        dot = Graph(filename='./static/process.gv')
+        dot.attr(splines='false')
+        dot.node_attr.update(shape='circle', fontname='arial',
+                             color='blue4', fontcolor='blue4')
+        dot.edge_attr.update(color='blue4')
+        for instruccion in ast.getInstr():
+            if not(isinstance(instruccion, Function)):
+                instruccion.plot(dot)
+
+        dot.render(filename='./static/process.gv', format='png')
+    except:
+        return {"error": "No se ha analizado el codigo"}
+
+    else:
+        # EN ESTA PARTE SE RETORNA LA URL CON EL PDF DEL ARBOL GENERADO, CAMBIAR EL DOMINIO DE SER NECESARIO
+        return {'url': 'http://localhost:4000/static/process.gv.png'}
+    
 
 @app.route('/symbol')
 def getTable():
