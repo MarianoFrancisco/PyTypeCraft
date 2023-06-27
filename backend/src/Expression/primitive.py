@@ -1,5 +1,5 @@
 from ..Abstract.abstract import Abstract
-
+import uuid
 
 class Primitive(Abstract):
 
@@ -13,3 +13,8 @@ class Primitive(Abstract):
     
     def getType(self):
         return self.type
+
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, str(self.value))
+        return id

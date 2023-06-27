@@ -2,7 +2,7 @@ from ..Expression.array import Array
 from ..Semantic.symbol import Symbol, AnySymbol, ArraySymbol
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
-
+import uuid
 
 class VariableAssignation(Abstract):
     def __init__(self, id, value, line, column):
@@ -30,6 +30,20 @@ class VariableAssignation(Abstract):
         if isinstance(result, CompilerException):
             return result
         return None
+    
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "Variable Assignation")
+        id_node_id = str(uuid.uuid4())
+        root.node(id_node_id, self.id)
+        # Create nodes for id and value
+        value_node_id = self.value.plot(root)
+
+        # Create edge from the root node to id and value nodes
+        root.edge(node_id, id_node_id)
+        root.edge(node_id, value_node_id)
+
+        return node_id
     
 # DEFINIR BIEN LA ASIGNACION DE VARIABLES
 class VariableArrayAssignation(VariableAssignation):

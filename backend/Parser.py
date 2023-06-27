@@ -1,3 +1,4 @@
+from graphviz import Graph
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
 from src.Instruction.struct import Struct
@@ -648,6 +649,13 @@ def parse(inp):
 # lexer.input(entrada)
 # # test_lexer(lexer)
 
+dot = Graph(filename='./static/process.gv')
+dot.attr(splines='false')
+dot.node_attr.update(shape='circle', fontname='arial',
+                     color='blue4', fontcolor='blue4')
+dot.edge_attr.update(color='blue4') 
+
+
 
 # instrucciones = parse(entrada)
 # ast = Tree_(instrucciones)
@@ -662,14 +670,14 @@ def parse(inp):
 #     if isinstance(instruccion, Function):
 #         ast.setFunctions(instruccion)
 
-# for instruccion in ast.getInstr():
-#     if not(isinstance(instruccion, Function)):
-#         value = instruccion.execute(ast,globalScope)
-#         if isinstance(value, CompilerException):
-#             ast.setExceptions(value)
-#     """ value = instruccion.execute(ast,globalScope)
-#     if isinstance(value, CompilerException):
-#         ast.setExceptions(value) """
-# print(ast.getConsole())
-# for err in ast.getExceptions():
-#     print(err)
+for instruccion in ast.getInstr():
+    if not(isinstance(instruccion, Function)):
+        value = instruccion.execute(ast,globalScope)
+        if isinstance(value, CompilerException):
+            ast.setExceptions(value)
+    """ value = instruccion.execute(ast,globalScope)
+    if isinstance(value, CompilerException):
+        ast.setExceptions(value) """
+print(ast.getConsole())
+for err in ast.getExceptions():
+    print(err)

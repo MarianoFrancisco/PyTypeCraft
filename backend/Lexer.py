@@ -1,7 +1,7 @@
 import re
 import ply.lex as lex
 
-from backend.src.Semantic.exception import CompilerException
+from src.Semantic.exception import CompilerException
 
 errors = []
 

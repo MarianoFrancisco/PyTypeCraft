@@ -1,6 +1,6 @@
 from ..Abstract.abstract import Abstract
 from ..Semantic.exception import CompilerException
-
+import uuid
 
 class Concat(Abstract):
 
@@ -19,3 +19,17 @@ class Concat(Abstract):
         #first_array.value=concat_array
         #return first_array.value
         return concat_array
+    
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        first_element_id = self.parameters[0].plot(root)
+        prevId = id
+        for param in self.parameters[1:]:
+            inner_id = str(uuid.uuid4())
+            root.node(inner_id, ',')
+            root.edge(prevId, inner_id)
+            root.edge(inner_id, param.plot(root))
+            prevId = inner_id
+        root.node(id, "concat")
+        root.edge(id, first_element_id)
+        return id

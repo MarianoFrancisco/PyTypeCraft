@@ -1,5 +1,6 @@
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
+import uuid
 
 class ArithmeticOperation(Abstract):
     # en el nivel mas bajo se espera que se reciban privitivo + primitivo
@@ -36,6 +37,16 @@ class ArithmeticOperation(Abstract):
             return left_value % right_value
         elif self.operator == '^':
             return left_value ** right_value
+    
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, self.operator)
+        left_id = self.l_op.plot(root)
+        right_id = self.r_op.plot(root)
+        root.edge(id, left_id)
+        root.edge(id, right_id)
+        return id
+
 
 
 class BooleanOperation(Abstract):
@@ -83,3 +94,12 @@ class BooleanOperation(Abstract):
             return left or right
         else:
             return CompilerException("Semantico", "Operacion no valida.", self.line, self.column)
+
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        root.node(id, self.operator)
+        left_id = self.l_op.plot(root)
+        right_id = self.r_op.plot(root)
+        root.edge(id, left_id)
+        root.edge(id, right_id)
+        return id
