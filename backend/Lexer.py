@@ -1,6 +1,8 @@
 import re
 import ply.lex as lex
 
+from backend.src.Semantic.exception import CompilerException
+
 errors = []
 
 # Palabras reservadas
@@ -158,6 +160,7 @@ def t_skip_line(t):
 
 
 def t_error(t):
+    errors.append(CompilerException("Lexico", "Error Lexico" + t.value[0], t.lexer.lineno, find_column(input, t)))
     t.lexer.skip(1)
 
 def find_column(inp, tk):
