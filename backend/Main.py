@@ -1,5 +1,6 @@
 # CORS -> Cross Origin Resource Sharing
 # Si no existe el CORS, no se puede acceder a los recursos de un servidor desde otro servidor
+import uuid
 from Parser import parse as Parser
 from Parser import add_natives as Natives
 from Parser import add_structs as Structs
@@ -90,17 +91,14 @@ def getAstPlot():
         dot.node_attr.update(shape='circle', fontname='arial',
                              color='blue4', fontcolor='blue4')
         dot.edge_attr.update(color='blue4')
-        for instruccion in ast.getInstr():
-            if not(isinstance(instruccion, Function)):
-                instruccion.plot(dot)
-
-        dot.render(filename='./static/process.gv', format='png')
+        plot_instructions(ast.getInstr(), dot)
+        dot.render()
     except:
         return {"error": "No se ha analizado el codigo"}
 
     else:
         # EN ESTA PARTE SE RETORNA LA URL CON EL PDF DEL ARBOL GENERADO, CAMBIAR EL DOMINIO DE SER NECESARIO
-        return {'url': 'http://localhost:4000/static/process.gv.png'}
+        return {'url': 'http://34.67.8.14:4000/static/process.gv.pdf'}
     
 
 @app.route('/symbol')
@@ -172,6 +170,18 @@ def getValueDataSecond( dict):
     val = val[:-2]  
     val += ")"
     return val
+
+def plot_instructions(instructions, root):
+    instructions_id = str(uuid.uuid4())
+    root.node(instructions_id, "instrucciones")
+    prevId = instructions_id
+
+    for instruction in instructions:
+        instruction_id = instruction.plot(root)
+        root.edge(prevId, instruction_id)
+        prevId = instruction_id
+
+    return instructions_id
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug = False, port=4000)
