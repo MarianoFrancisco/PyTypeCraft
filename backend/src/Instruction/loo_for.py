@@ -7,6 +7,7 @@ from ..Semantic.symbol import Symbol
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
 from ..Semantic.symbol_table import SymbolTable
+import uuid
 
 class For(Abstract):
 
@@ -55,7 +56,37 @@ class For(Abstract):
             if self.restriction.type != 'boolean':
                 return CompilerException("Semantico", "Tipo de dato no booleano en FOR.", self.line, self.column)
         return None
-            
+
+
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "For Loop")
+
+        # Create node for declaration
+        declaration_node_id = self.declaration.plot(root)
+        root.edge(node_id, declaration_node_id)
+
+        # Create node for restriction
+        restriction_node_id = self.restriction.plot(root)
+        root.edge(node_id, restriction_node_id)
+
+        # Create node for variation
+        variation_node_id = self.variation.plot(root)
+        root.edge(node_id, variation_node_id)
+
+        # Create node for instructions
+        inner_id = str(uuid.uuid4())
+        root.node(inner_id, "Instructions")
+        root.edge(node_id, inner_id)
+
+        # Check if there are instructions and create nodes for them
+        if self.instruction:
+            # Create nodes for each instruction and connect them to the inner node
+            for instruction in self.instruction:
+                instruction_node_id = instruction.plot(root)
+                root.edge(inner_id, instruction_node_id)
+
+        return node_id
 
 
 class ForOf(Abstract):
@@ -90,3 +121,29 @@ class ForOf(Abstract):
                 if isinstance(resultInstruction, ReservedBreak): return None
                 if isinstance(resultInstruction, ReservedContinue): break
         return None
+    
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "For Of Loop")
+
+        # Create node for declaration
+        declaration_node_id = self.declaration.plot(root)
+        root.edge(node_id, declaration_node_id)
+
+        # Create node for array
+        array_node_id = self.array.plot(root)
+        root.edge(node_id, array_node_id)
+
+        # Create node for instructions
+        inner_id = str(uuid.uuid4())
+        root.node(inner_id, "Instructions")
+        root.edge(node_id, inner_id)
+
+        # Check if there are instructions and create nodes for them
+        if self.instructions:
+            # Create nodes for each instruction and connect them to the inner node
+            for instruction in self.instructions:
+                instruction_node_id = instruction.plot(root)
+                root.edge(inner_id, instruction_node_id)
+
+        return node_id

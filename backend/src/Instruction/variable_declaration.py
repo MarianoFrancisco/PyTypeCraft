@@ -4,6 +4,7 @@ from ..Expression.primitive import Primitive
 from ..Semantic.exception import CompilerException
 from ..Abstract.abstract import Abstract
 from ..Semantic.symbol import Symbol, ArraySymbol, AnySymbol
+import uuid
 
 class VariableDeclaration(Abstract):
 
@@ -47,4 +48,21 @@ class VariableDeclaration(Abstract):
         else:
             result = CompilerException("Semantico", "Tipo de dato diferente declarado.", self.line, self.column)
             return result
-    
+
+    def plot(self, root):
+        node_id = str(uuid.uuid4())
+        root.node(node_id, "Variable Declaration")
+
+        # Create nodes for id, type, and value
+        type_node_id = str(uuid.uuid4())
+        id_node_id = str(uuid.uuid4())
+        root.node(id_node_id, self.id)
+        root.node(type_node_id, self.type)
+        value_node_id = self.value.plot(root)
+
+        # Create edges from the root node to id, type, and value nodes
+        root.edge(node_id, id_node_id)
+        root.edge(node_id, type_node_id)
+        root.edge(node_id, value_node_id)
+
+        return node_id

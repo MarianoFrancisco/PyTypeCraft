@@ -574,8 +574,7 @@ def parse(inp):
 
 
 entrada = '''
-console.log(a[1][2], a.tr.g, {id: 234, tremendo: 'hola mudno'})
-
+concat('hola', 'tremendo', 's')
 '''
 
 def test_lexer(lexer):

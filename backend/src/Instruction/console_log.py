@@ -17,8 +17,14 @@ class ConsoleLog(Abstract):
     
     def plot(self, root):
         id = str(uuid.uuid4())
+        first_element_id = self.params[0].plot(root)
+        prevId = id
+        for param in self.params[1:]:
+            inner_id = str(uuid.uuid4())
+            root.node(inner_id, ',')
+            root.edge(prevId, inner_id)
+            root.edge(inner_id, param.plot(root))
+            prevId = inner_id
         root.node(id, "console.log")
-        for param in self.params:
-            param_id = param.plot(root)
-            root.edge(id, param_id)
+        root.edge(id, first_element_id)
         return id
