@@ -97,23 +97,3 @@ class IfSentence(Abstract):
             generator.defineLabel(leave)#define my lave for leave, L#:
         generator.addNewComment('End conditional if')
 
-        # conditionEvaluated = self.condition.execute(tree, table)
-        # if isinstance(conditionEvaluated, CompilerException): return conditionEvaluated
-        # # Validar que el tipo sea booleano
-        # if bool(conditionEvaluated) == True:
-        #     scope = SymbolTable(table)  #NUEVO ENTORNO - HIJO - Vacio
-        #     for instruccion in self.ifBlock:
-        #         result = instruccion.execute(tree, scope) 
-        #         if isinstance(result, CompilerException) :
-        #             tree.setExceptions(result)
-        #         if isinstance(result, ReservedReturn): return result
-        # elif self.elseBlock != None:
-        #     scope = SymbolTable(table)
-        #     for instruccion in self.elseBlock:
-        #         result = instruccion.execute(tree, scope) 
-        #         if isinstance(result, CompilerException) :
-        #             tree.setExceptions(result)
-        #         if isinstance(result, ReservedReturn): return result
-        # elif self.elseIfBlock != None:
-        #     result = self.elseIfBlock.execute(tree, table)
-        #     if isinstance(result, ReservedReturn): return result

@@ -15,7 +15,7 @@ export class AnalizadorPrimeraFaseService {
   });
 
   Analizer(code:String){
-    const url = 'http://34.28.167.82:4000/compile'
+    const url = 'http://34.67.8.14:4000/compile'
     return this.http.post<any>(
       url,
       {
@@ -23,14 +23,17 @@ export class AnalizadorPrimeraFaseService {
       }
     ).pipe(map(data=>data));
   }
-
+  Graphic(){
+    const url = 'http://34.67.8.14:4000/plot'
+    return this.http.get<any>(url)
+  }
   Errores(){
-    const url = 'http://34.28.167.82:4000/mistake'
+    const url = 'http://34.67.8.14:4000/mistake'
     return this.http.get<any>(url)
   }
 
   Tabla(){
-    const url = 'http://34.28.167.82:4000/symbol'
+    const url = 'http://34.67.8.14:4000/symbol'
     return this.http.get<any>(url)
   }
 }

@@ -1,49 +1,54 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
-    <a class="navbar-brand" href="/analizarPrimeraFase" align="center">PyTypeCraft For First Fase</a><br>
+    <li class="nav-link active">
+        <a class="btn btn-danger" href="/home" align="center">Regresar</a>
+    </li>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
             <li class="nav-link active">
-                <input (click)="analizar()" type="button" class="btn btn-dark" value="Analizar">
+                <input (click)="analizar()" type="button" class="btn btn-success" value="Analizar">
             </li>
             <li class="nav-link">
-                <input style="display:none;" accept=".ts" type="file" (change)="abrir($event)" #archivo>
-                <input (click)="archivo.click()" type="button" class="btn btn-dark" value="Abrir">
-            </li>
-            <li class="nav-link">
-                <input (click)="guardar()" type="button" class="btn btn-dark" value="Guardar">
-            </li>
-            <li class="nav-link">
-                <input (click)="limpiar()" type="button" class="btn btn-dark" value="Limpiar">
+                <input (click)="limpiar()" type="button" class="btn btn-primary" value="Limpiar">
             </li>
             <span *ngIf="!mostrarTabla">
             <li class="nav-link">
-                <input (click)="errores()" type="button" class="btn btn-dark" value="Errores">
+                <input (click)="errores()" type="button" class="btn btn-danger" value="Errores">
             </li>
             </span>
             <span *ngIf="mostrarTabla">
                 <li class="nav-link">
-                    <input (click)="ocultar()" type="button" class="btn btn-dark" value="Ocultar">
+                    <input (click)="ocultar()" type="button" class="btn btn-warning" value="Ocultar">
                 </li>
             </span>
             <span *ngIf="!mostrarSimbolo">
                 <li class="nav-link">
-                    <input (click)="tabla()" type="button" class="btn btn-dark" value="Simbolos">
+                    <input (click)="tabla()" type="button" class="btn btn-info" value="Simbolos">
                 </li>
             </span>
             <span *ngIf="mostrarSimbolo">
                 <li class="nav-link">
-                    <input (click)="ocultar()" type="button" class="btn btn-dark" value="Ocultar">
+                    <input (click)="ocultar()" type="button" class="btn btn-warning" value="Ocultar">
                 </li>
             </span>
+            <li class="nav-link">
+                <input (click)="redirect()" type="button" class="btn btn-secondary" value="Visualizar CST">
+            </li>
+            <li class="nav-link">
+                <input style="display:none;" accept=".ts" type="file" (change)="abrir($event)" #archivo>
+                <input (click)="archivo.click()" type="button" class="btn btn-secondary" value="Abrir">
+            </li>
+            <li class="nav-link">
+                <input (click)="guardar()" type="button" class="btn btn-secondary" value="Guardar">
+            </li>
         </ul>
     </div>
 </nav>
 
-<div class="row">
+<div class="row"><h1 class="text-white" align="center">PyTypeCraft For First Phase</h1>
     <div class="row bg-dark">
         <div class="container-fluid bg-black">
             <div class="row justify-content-center">

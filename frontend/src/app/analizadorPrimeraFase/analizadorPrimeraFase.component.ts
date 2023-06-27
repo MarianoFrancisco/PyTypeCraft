@@ -79,7 +79,12 @@ export class AnalizadorPrimeraFaseComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  redirect()
+  {
+    this.analizarService.Graphic().subscribe((res)=>{
+      window.open('http://34.67.8.14:4000/static/process.gv.pdf', '_blank');
+    })
+  }
   abrir(eve:any)
   {
     let a =eve.target.files[0]
@@ -97,7 +102,7 @@ export class AnalizadorPrimeraFaseComponent implements OnInit {
       reader.readAsText(a)
     }
   }
-
+  
   guardar()
   {
     this.consola.setValue("");

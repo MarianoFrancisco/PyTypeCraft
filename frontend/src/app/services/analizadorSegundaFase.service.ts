@@ -15,7 +15,7 @@ export class AnalizadorSegundaFaseService {
   });
 
   Analizer(code:String){
-    const url = 'http://34.28.167.82:5000/compile'
+    const url = 'http://34.67.8.14:5000/compile'
     return this.http.post<any>(
       url,
       {
@@ -25,12 +25,12 @@ export class AnalizadorSegundaFaseService {
   }
 
   Errores(){
-    const url = 'http://34.28.167.82:5000/errores'
+    const url = 'http://34.67.8.14:5000/errores'
     return this.http.get<any>(url)
   }
 
   Tabla(){
-    const url = 'http://34.28.167.82:5000/symbol'
+    const url = 'http://34.67.8.14:5000/symbol'
     return this.http.get<any>(url)
   }
 }

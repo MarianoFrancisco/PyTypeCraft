@@ -79,7 +79,10 @@ export class AnalizadorSegundaFaseComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  redirect()
+  {
+    window.open('https://go.dev/play/', '_blank');
+  }
   abrir(eve:any)
   {
     let a =eve.target.files[0]

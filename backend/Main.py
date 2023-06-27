@@ -94,13 +94,13 @@ def getAstPlot():
             if not(isinstance(instruccion, Function)):
                 instruccion.plot(dot)
 
-        dot.render(filename='./static/process.gv', format='png')
+        dot.render()
     except:
         return {"error": "No se ha analizado el codigo"}
 
     else:
         # EN ESTA PARTE SE RETORNA LA URL CON EL PDF DEL ARBOL GENERADO, CAMBIAR EL DOMINIO DE SER NECESARIO
-        return {'url': 'http://localhost:4000/static/process.gv.png'}
+        return {'url': 'http://34.67.8.14:4000/static/process.gv.pdf'}
     
 
 @app.route('/symbol')

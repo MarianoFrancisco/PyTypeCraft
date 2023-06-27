@@ -18,23 +18,27 @@ export class HomeComponent implements OnInit {
 
   LoginFirstFase(){
     Swal.fire({
-      title: 'Bienvenido',
+      title: 'Welcome to PyTypeCraft First Phase',
       text: "",
       icon: 'success',
+      showConfirmButton: false,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Aceptar'
+      confirmButtonText: 'Aceptar',
+      timer: 1000
     })
     this.router.navigate(['analizarPrimeraFase'])
   }
   LoginSecondFase(){
     Swal.fire({
-      title: 'Bienvenido',
+      title: 'Welcome to PyTypeCraft Second Phase',
       text: "",
       icon: 'success',
+      showConfirmButton: false,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Aceptar'
+      confirmButtonText: 'Aceptar',
+      timer: 1000
     })
     this.router.navigate(['analizarSegundaFase'])
   }
