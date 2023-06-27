@@ -80,6 +80,22 @@ class VariableArrayAssignation(VariableAssignation):
             return CompilerException("Semantico", "Indice fuera de rango", self.line, self.column)
         else: return None
 
+    def plot(self, root):
+        id = str(uuid.uuid4())
+        first_element_id = str(uuid.uuid4())
+        root.node(first_element_id, self.id)
+        prevId = id
+        for index in self.indexes:
+            inner_id = str(uuid.uuid4())
+            root.node(inner_id, '[ ]=')
+            root.edge(prevId, inner_id)
+            root.edge(inner_id, index.plot(root))
+            prevId = inner_id
+
+        root.node(id, '[ ]=')
+        root.edge(id, first_element_id)
+        return id
+
 class VariableStructAssignation(VariableAssignation):
     def __init__(self, id, keys, value, line, column):
         super().__init__(id, value, line, column)

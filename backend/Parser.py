@@ -1,4 +1,5 @@
 from graphviz import Graph
+import uuid
 import ply.yacc as yacc
 from Lexer import tokens, lexer, errors, find_column
 from src.Instruction.struct import Struct
@@ -574,7 +575,23 @@ def parse(inp):
 
 
 entrada = '''
-concat('hola', 'tremendo', 's')
+console.log("");
+console.log("=======================================================================");
+console.log("=============================TRANSFERENCIA=============================");
+console.log("=======================================================================");
+
+let a:number = -1;
+while (a < 5){
+    a = a + 1;
+    if (a === 3){
+        console.log("a");
+        continue;
+    } else if (a === 4){
+        console.log("b");
+        break;
+    };
+    console.log("El valor de a es: ", a, ", ");
+};
 '''
 
 def test_lexer(lexer):
@@ -587,38 +604,57 @@ def test_lexer(lexer):
 lexer.input(entrada)
 # test_lexer(lexer)
 
-dot = Graph(filename='./static/process.gv')
-dot.attr(splines='false')
-dot.node_attr.update(shape='circle', fontname='arial',
-                     color='blue4', fontcolor='blue4')
-dot.edge_attr.update(color='blue4') 
+# dot = Graph(filename='./static/process.gv')
+# dot.attr(splines='false')
+# dot.node_attr.update(shape='circle', fontname='arial',
+#                      color='blue4', fontcolor='blue4')
+# dot.edge_attr.update(color='blue4') 
 
 
 
-instrucciones = parse(entrada)
-ast = Tree_(instrucciones)
-globalScope = SymbolTable()
-ast.setGlobalScope(globalScope)
-add_natives(ast)
-add_structs(ast)
+# instrucciones = parse(entrada)
+# ast = Tree_(instrucciones)
+# globalScope = SymbolTable()
+# ast.setGlobalScope(globalScope)
+# add_natives(ast)
+# add_structs(ast)
 
-for instruccion in ast.getInstr():
-    if isinstance(instruccion, Struct):
-        ast.addInterface(instruccion)
-    if isinstance(instruccion, Function):
-        ast.setFunctions(instruccion)
+# for instruccion in ast.getInstr():
+#     if isinstance(instruccion, Struct):
+#         ast.addInterface(instruccion)
+#     if isinstance(instruccion, Function):
+#         ast.setFunctions(instruccion)
 
-for instruccion in ast.getInstr():
-    if not(isinstance(instruccion, Function)):
-        value = instruccion.execute(ast,globalScope)
-        instruccion.plot(dot)
-        if isinstance(value, CompilerException):
-            ast.setExceptions(value)
-    """ value = instruccion.execute(ast,globalScope)
-    if isinstance(value, CompilerException):
-        ast.setExceptions(value) """
-print(ast.getConsole())
-for err in ast.getExceptions():
-    print(err)
+# for instruccion in ast.getInstr():
+#     if not(isinstance(instruccion, Function)):
+#         value = instruccion.execute(ast,globalScope)
+#         if isinstance(value, CompilerException):
+#             ast.setExceptions(value)
+#     """ value = instruccion.execute(ast,globalScope)
+#     if isinstance(value, CompilerException):
+#         ast.setExceptions(value) """
+# print(ast.getConsole())
+# for err in ast.getExceptions():
+#     print(err)
 
-dot.render()
+
+
+
+# def plot_instructions(instructions, root):
+#     instructions_id = str(uuid.uuid4())
+#     root.node(instructions_id, "instrucciones")
+#     prevId = instructions_id
+
+#     for instruction in instructions:
+#         instruction_id = instruction.plot(root)
+#         root.edge(prevId, instruction_id)
+#         prevId = instruction_id
+
+#     return instructions_id
+
+# finalid = plot_instructions(ast.getInstr(), dot)
+
+# dot.node('start', 'program')
+# dot.edge('start', finalid)
+
+# # dot.render()

@@ -1,0 +1,18 @@
+graph {
+	node [color=blue4 fontcolor=blue4 fontname=arial shape=circle]
+	edge [color=blue4]
+	splines=false
+	"b594f8a4-5abd-4e21-85d0-449d8b87351b" [label=instrucciones]
+	"08b7fd51-20fa-4461-a976-2f52b3d441d2" [label="+"]
+	"8989603f-9206-4870-80a5-0855ac627315" [label=1]
+	"11f41984-d083-4978-9c3c-788bf6ddbe50" [label=34]
+	"08b7fd51-20fa-4461-a976-2f52b3d441d2" -- "8989603f-9206-4870-80a5-0855ac627315"
+	"08b7fd51-20fa-4461-a976-2f52b3d441d2" -- "11f41984-d083-4978-9c3c-788bf6ddbe50"
+	"0f943979-1897-4ced-9fc0-17ff2c9a4657" [label=","]
+	"ecf957a0-c2fd-4d53-8f3a-22a086330c3c" -- "0f943979-1897-4ced-9fc0-17ff2c9a4657"
+	"7a13d519-d743-4c63-94bd-057797a82a1a" [label=False]
+	"0f943979-1897-4ced-9fc0-17ff2c9a4657" -- "7a13d519-d743-4c63-94bd-057797a82a1a"
+	"ecf957a0-c2fd-4d53-8f3a-22a086330c3c" [label="console.log"]
+	"ecf957a0-c2fd-4d53-8f3a-22a086330c3c" -- "08b7fd51-20fa-4461-a976-2f52b3d441d2"
+	"b594f8a4-5abd-4e21-85d0-449d8b87351b" -- "ecf957a0-c2fd-4d53-8f3a-22a086330c3c"
+}
