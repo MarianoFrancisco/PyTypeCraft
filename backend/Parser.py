@@ -556,10 +556,8 @@ def add_structs(ast):
     any = Struct('any', data, -1, -1)
     ast.addInterface(any)
 
-def p_error(p):
-    if(p!=None):
-        errors.append(CompilerException("Sintactico", "Error sintactico " + p.value, p.lineno(1), find_column(input, p.slice[1])))
-    
+def p_error(t):
+    print(" Error sintáctico en '%s'" % t.value, t)
 
 
 input = ''
@@ -575,79 +573,19 @@ def parse(inp):
     return parser.parse(inp)
 
 
-# entrada = '''
-# interface Actor {
-#     nombre: string;
-#     edad: number;
-# }
+entrada = '''
+concat('hola', 'tremendo', 's')
+'''
 
-# interface Pelicula {
-#     nombre: string;
-#     posicion: number;
-# }
+def test_lexer(lexer):
+    while True:
+        tok = lexer.token()
+        if not tok:
+            break  # No more input
+        print(tok)
 
-# interface Contrato {
-#     actor: Actor;
-#     pelicula: Pelicula;
-# }
-
-# let actores = ["Elizabeth Olsen", "Adam Sandler", "Christian Bale", "Jennifer Aniston"];
-# let peliculas = ["Avengers: Age of Ultron", "Mr. Deeds", "Batman: The Dark Knight", "Marley & Me"];
-
-# function contratar(actor: Actor, pelicula: Pelicula): Contrato {
-#     return {
-#         actor: actor,
-#         pelicula: pelicula
-#     }
-# }
-
-# function crearActor(nombre: string, edad: number): Actor {
-#     return {
-#         nombre: nombre,
-#         edad: edad
-# }
-# }
-
-# function crearPelicula(nombre: string, posicion: number): Pelicula {
-#     return {
-#         nombre: nombre,
-#         posicion: posicion
-#     }
-# }
-# function imprimir(contrato: Contrato): void {
-#     console.log("Actor:", contrato.actor.nombre, "   Edad:", contrato.actor.edad);
-#     console.log("Pelicula:", contrato.pelicula.nombre, "   Genero:", contrato.pelicula.posicion);
-# }
-# function contratos(): void {
-#     for (let i = 1; i < 3; i++) {
-#         let contrato = {
-#         actor: { nombre: "", edad: 0 },
-#         pelicula: { nombre: "", posicion: 0 }
-#         };
-#         if (i < 4) {
-#         let actor = crearActor(actores[i - 1], i + 38);
-#         let pelicula = crearPelicula(peliculas[i - 1], i);
-#         contrato = contratar(actor, pelicula);
-#         }
-#         imprimir(contrato);
-#     }
-# }
-
-# contratos();
-
-
-
-# '''
-
-# def test_lexer(lexer):
-#     while True:
-#         tok = lexer.token()
-#         if not tok:
-#             break  # No more input
-#         print(tok)
-
-# lexer.input(entrada)
-# # test_lexer(lexer)
+lexer.input(entrada)
+# test_lexer(lexer)
 
 dot = Graph(filename='./static/process.gv')
 dot.attr(splines='false')
@@ -657,22 +595,23 @@ dot.edge_attr.update(color='blue4')
 
 
 
-# instrucciones = parse(entrada)
-# ast = Tree_(instrucciones)
-# globalScope = SymbolTable()
-# ast.setGlobalScope(globalScope)
-# add_natives(ast)
-# add_structs(ast)
+instrucciones = parse(entrada)
+ast = Tree_(instrucciones)
+globalScope = SymbolTable()
+ast.setGlobalScope(globalScope)
+add_natives(ast)
+add_structs(ast)
 
-# for instruccion in ast.getInstr():
-#     if isinstance(instruccion, Struct):
-#         ast.addInterface(instruccion)
-#     if isinstance(instruccion, Function):
-#         ast.setFunctions(instruccion)
+for instruccion in ast.getInstr():
+    if isinstance(instruccion, Struct):
+        ast.addInterface(instruccion)
+    if isinstance(instruccion, Function):
+        ast.setFunctions(instruccion)
 
 for instruccion in ast.getInstr():
     if not(isinstance(instruccion, Function)):
         value = instruccion.execute(ast,globalScope)
+        instruccion.plot(dot)
         if isinstance(value, CompilerException):
             ast.setExceptions(value)
     """ value = instruccion.execute(ast,globalScope)
@@ -681,3 +620,5 @@ for instruccion in ast.getInstr():
 print(ast.getConsole())
 for err in ast.getExceptions():
     print(err)
+
+dot.render()
