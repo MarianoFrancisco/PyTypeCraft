@@ -523,8 +523,10 @@ def add_natives(ast):
     ast.setFunctions(toExponential)
 
 
-def p_error(t):
-    print(" Error sintáctico en '%s'" % t.value, t)
+def p_error(p):
+    if(p!=None):
+        print(" Error sintáctico en '%s'" % p.value, p)
+    
 
 
 input = ''
@@ -540,29 +542,29 @@ def parse(inp):
     return parser.parse(inp)
 
 
-entrada = '''
-let a:number = -1;
-while (a < 5){
-    a = a + 1;
-    if (a === 3){
-        console.log("a");
-        continue;
-    } else if (a === 4){
-        console.log("b");
-        break;
-    };
-    console.log("El valor de a es: ", a, ", ");
-};
-'''
+# entrada = '''
+# let a:number = -1;
+# while (a < 5){
+#     a = a + 1;
+#     if (a === 3){
+#         console.log("a");
+#         continue;
+#     } else if (a === 4){
+#         console.log("b");
+#         break;
+#     };
+#     console.log("El valor de a es: ", a, ", ");
+# };
+# '''
 
-def test_lexer(lexer):
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break  # No more input
-        print(tok)
+# def test_lexer(lexer):
+#     while True:
+#         tok = lexer.token()
+#         if not tok:
+#             break  # No more input
+#         print(tok)
 
-lexer.input(entrada)
+# lexer.input(entrada)
 # test_lexer(lexer)
 
 
