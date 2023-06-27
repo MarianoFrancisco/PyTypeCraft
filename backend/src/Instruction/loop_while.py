@@ -15,6 +15,7 @@ class While(Abstract):
         self.colum = column
 
     def execute(self, tree, table):
+        scope = SymbolTable(table)
         while True:
             condition = self.condition.execute(tree, table)
 
@@ -26,7 +27,7 @@ class While(Abstract):
 
             if bool(condition):
                 for instruction in self.instructions:
-                    scope = SymbolTable(table)
+                    
                     value = instruction.execute(tree, scope)
 
                     if isinstance(value, CompilerException):

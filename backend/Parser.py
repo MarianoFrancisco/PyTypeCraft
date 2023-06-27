@@ -574,34 +574,26 @@ def parse(inp):
     return parser.parse(inp)
 
 
-entrada = '''
-console.log("");
-console.log("=======================================================================");
-console.log("=============================TRANSFERENCIA=============================");
-console.log("=======================================================================");
+# entrada = '''
+# let i: number = 0;
+# while (i < 3) {
+#   let j: number = 0;
+#   while (j < 5) {
+#     console.log('Iteración externa:', i, 'Iteración interna:', j);
+#     j = j + 1; // Actualizar manualmente la variable de control interna
+#   }
+#   i = i + 1; // Actualizar manualmente la variable de control externa
+# }
+# '''
 
-let a:number = -1;
-while (a < 5){
-    a = a + 1;
-    if (a === 3){
-        console.log("a");
-        continue;
-    } else if (a === 4){
-        console.log("b");
-        break;
-    };
-    console.log("El valor de a es: ", a, ", ");
-};
-'''
+# def test_lexer(lexer):
+#     while True:
+#         tok = lexer.token()
+#         if not tok:
+#             break  # No more input
+#         print(tok)
 
-def test_lexer(lexer):
-    while True:
-        tok = lexer.token()
-        if not tok:
-            break  # No more input
-        print(tok)
-
-lexer.input(entrada)
+# lexer.input(entrada)
 # test_lexer(lexer)
 
 # dot = Graph(filename='./static/process.gv')
@@ -652,9 +644,9 @@ lexer.input(entrada)
 
 #     return instructions_id
 
-# finalid = plot_instructions(ast.getInstr(), dot)
+# # finalid = plot_instructions(ast.getInstr(), dot)
 
-# dot.node('start', 'program')
-# dot.edge('start', finalid)
+# # dot.node('start', 'program')
+# # dot.edge('start', finalid)
 
-# # dot.render()
+# dot.render()
